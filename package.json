@@ -37,16 +37,6 @@
         "command": "extension.jumpy-line",
         "title": "Jumpy Line Mode"
       }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.jumpy-word",
-        "key": "shift+enter w"
-      },
-      {
-        "command": "extension.jumpy-line",
-        "key": "shift+enter l"
-      }
     ]
   },
   "scripts": {
