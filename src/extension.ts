@@ -46,13 +46,21 @@ export function activate(context: vscode.ExtensionContext) {
             return;
         }
 
-        if (!firstKeyOfCode) {
-            firstKeyOfCode = args.text;
+        const editor = vscode.window.activeTextEditor;
+        const text: string = args.text;
+
+        if (text.search(/[a-z]/) === -1) {
+            isJumpyMode = false;
+            editor.setDecorations(decorationType, []);
             return;
         }
 
-        const editor = vscode.window.activeTextEditor;
-        const code = firstKeyOfCode + args.text;
+        if (!firstKeyOfCode) {
+            firstKeyOfCode = text;
+            return;
+        }
+
+        const code = firstKeyOfCode + text;
         const position = positions[getCodeIndex(code)];
 
         editor.setDecorations(decorationType, []);
