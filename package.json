@@ -1,7 +1,7 @@
 {
   "name": "vscode-jumpy",
   "displayName": "vscode-jumpy",
-  "description": "",
+  "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
   "version": "0.0.1",
   "publisher": "wmaurer",
   "engines": {
@@ -10,33 +10,55 @@
   "categories": [
     "Other"
   ],
+  "galleryBanner": {
+    "color": "#1e1e1e",
+    "theme": "dark"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wmaurer/vscode-jumpy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wmaurer/vscode-jumpy/issues"
+  },
+  "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
   "activationEvents": [
-    "onCommand:extension.sayHello"
+    "onCommand:extension.jumpy-word",
+    "onCommand:extension.jumpy-line"
   ],
   "main": "./out/src/extension",
   "contributes": {
     "commands": [
       {
-        "command": "extension.sayHello",
-        "title": "Hello World"
+        "command": "extension.jumpy-word",
+        "title": "Jumpy Word Mode"
+      },
+      {
+        "command": "extension.jumpy-line",
+        "title": "Jumpy Line Mode"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "extension.jumpy-word",
+        "key": "shift+enter w"
+      },
+      {
+        "command": "extension.jumpy-line",
+        "key": "shift+enter l"
       }
     ]
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
     "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "icon-generation:compile-web": "./node_modules/.bin/tsc ./icon-generation/web/index.ts --lib dom,es6",
-    "icon-generation:run-web": "./node_modules/.bin/http-server ./icon-generation/web",
-    "icon-generation:compile-convert": "./node_modules/.bin/tsc ./icon-generation/icons-to-file.ts --lib es2015",
-    "icon-generation:run-convert": "./node_modules/.bin/node ./icon-generation7/icons-to-file.js"
+    "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
     "@types/bluebird": "^3.0.33",
     "@types/mocha": "^2.2.32",
     "@types/node": "^6.0.40",
     "bluebird": "^3.4.6",
-    "http-server": "^0.9.0",
     "mocha": "^2.3.3",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"

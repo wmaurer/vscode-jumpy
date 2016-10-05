@@ -1,9 +1,4 @@
 out
 node_modules
 
-icon-generation/dark
-icon-generation/light
-icon-generation/icons.json
-icon-generation/**/*.js
-
 

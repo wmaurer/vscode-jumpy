@@ -1,43 +1,67 @@
 'use strict';
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+import { createCodeArray, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
+import { JumpyPosition, jumpyWord, jumpyLine } from './jumpy-positions';
+
 export function activate(context: vscode.ExtensionContext) {
+    const codeArray = createCodeArray();
+    const decorationType = createTextEditorDecorationType();
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "vscode-jumpy" is now active!');
+    let positions: JumpyPosition[] = null;
+    let firstLineNumber = 0;
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('extension.sayHello', () => {
-        const decorationType = vscode.window.createTextEditorDecorationType({});
+    let isJumpyMode = false;
+    let firstKeyOfCode: string = null;
 
-        const rofn = n => ({
-            dark: {
-                after: {
-                    margin: '3px 0 0 -14px',
-                    contentIconPath: `c:\\temp\\${n}.png`
-                }
-            }
-        });
+    function runJumpy(jumpyFn: any) {
+        const editor = vscode.window.activeTextEditor;
 
-        const d1 = {
-            range: new vscode.Range(1, 11, 1, 13),
-            renderOptions: rofn('zq')
-        };
+        const getLinesResult = getLines(editor);
+        positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines);
+        const decorations = positions
+            .map((position, i) => createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]));
 
-        const activeEditor = vscode.window.activeTextEditor;
-        activeEditor.setDecorations(decorationType, [d1])
+        editor.setDecorations(decorationType, decorations);
+
+        isJumpyMode = true;
+        firstKeyOfCode = null;
+    }
+
+    let jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
+        runJumpy(jumpyWord);
     });
 
-    context.subscriptions.push(disposable);
+    context.subscriptions.push(jumpyWordDisposable);
+
+    let jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
+        runJumpy(jumpyLine);
+    });
+
+    context.subscriptions.push(jumpyLineDisposable);
+
+    const jumpyTypeDisposable = vscode.commands.registerCommand('type', args => {
+        if (!isJumpyMode) {
+            vscode.commands.executeCommand('default:type', args);
+            return;
+        }
+
+        if (!firstKeyOfCode) {
+            firstKeyOfCode = args.text;
+            return;
+        }
+
+        const editor = vscode.window.activeTextEditor;
+        const code = firstKeyOfCode + args.text;
+        const position = positions[getCodeIndex(code)];
+
+        editor.setDecorations(decorationType, []);
+        vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
+        isJumpyMode = false;
+    });
+
+    context.subscriptions.push(jumpyTypeDisposable);
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {
 }

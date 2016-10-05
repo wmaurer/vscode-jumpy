@@ -11,7 +11,6 @@
     },
     "exclude": [
         "node_modules",
-        "icon-generation",
         ".vscode-test"
     ]
 }
