@@ -1,9 +1,9 @@
 {
   "name": "vscode-jumpy",
-  "displayName": "vscode-jumpy",
+  "displayName": "jumpy",
   "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "wmaurer",
   "engines": {
     "vscode": "^1.5.0"

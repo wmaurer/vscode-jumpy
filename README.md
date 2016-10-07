@@ -13,7 +13,17 @@ Where the decorators are created is dependent on the command you use:
 * `extension.jumpy-word` (Jumpy Word Mode): decorates words in the area around your cursor
 * `extension.jumpy-line` (Jumpy Line Mode): decorates non-empty lines in the area around your cursor
 
-No default keybindings have been provided with this extensions, to avoid conflicts. Instructions for setting up your own keybindings are [here](https://code.visualstudio.com/docs/customization/keybindings)
+No default keybindings have been provided with this extension to avoid conflicts. Instructions for setting up your own keybindings are [here](https://code.visualstudio.com/docs/customization/keybindings)
+
+To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (File -> Preferences -> Keyboard Shortcuts):
+
+```
+    {
+        "key": "shift+enter",
+        "command": "extension.jumpy-word",
+        "when": "editorTextFocus"
+    }
+```
 
 ## WARNING
 
