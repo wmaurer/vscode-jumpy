@@ -1,31 +1,32 @@
 export interface JumpyPosition {
     line: number;
     character: number;
+    charOffset: number;
 }
 
-const wordRegexp = new RegExp(/([A-Z]+([0-9a-z])*)|[a-z0-9]{2,}/, 'g');
+export interface JumpyFn {
+    (maxDecorations: number, firstLineNumber: number, lines: string[], regexp: RegExp): JumpyPosition[]
+}
 
-export function jumpyWord(maxDecorations: number, firstLineNumber: number, lines: string[]): JumpyPosition[] {
+export function jumpyWord(maxDecorations: number, firstLineNumber: number, lines: string[], regexp: RegExp): JumpyPosition[] {
     let positionIndex = 0;
-    const positions = [];
+    const positions: JumpyPosition[] = [];
     for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
         let lineText = lines[i];
         let word: RegExpExecArray;
-        while (!!(word = wordRegexp.exec(lineText)) && positionIndex < maxDecorations) {
-            positions.push({ line: i + firstLineNumber, character: word.index });
+        while (!!(word = regexp.exec(lineText)) && positionIndex < maxDecorations) {
+            positions.push({ line: i + firstLineNumber, character: word.index, charOffset: 2 });
         }
     }
     return positions;
 }
 
-const blankLineRegexp = new RegExp(/^\s*$/);
-
-export function jumpyLine(maxDecorations: number, firstLineNumber: number, lines: string[]): JumpyPosition[] {
+export function jumpyLine(maxDecorations: number, firstLineNumber: number, lines: string[], regexp: RegExp): JumpyPosition[] {
     let positionIndex = 0;
-    const positions = [];
+    const positions: JumpyPosition[] = [];
     for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
-        if (!lines[i].match(blankLineRegexp)) {
-            positions.push({ line: i + firstLineNumber, character: 0 });
+        if (!lines[i].match(regexp)) {
+            positions.push({ line: i + firstLineNumber, character: 0, charOffset: lines[i].length == 1 ? 1 : 2 });
         }
     }
     return positions;

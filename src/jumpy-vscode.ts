@@ -14,6 +14,14 @@ export function createCodeArray(): string[] {
     return codeArray;
 }
 
+let darkDataUriCache: { [index: string]: vscode.Uri } = {};
+let lightDataUriCache: { [index: string]: vscode.Uri } = {};
+
+export function createDataUriCaches(codeArray: string[]) {
+    codeArray.forEach(code => darkDataUriCache[code] = getSvgDataUri(code, 'white', 'black'))
+    codeArray.forEach(code => lightDataUriCache[code] = getSvgDataUri(code, 'black', 'white'))
+}
+
 export function getCodeIndex(code: string): number {
     return (code.charCodeAt(0) - 97) * numCharCodes + code.charCodeAt(1) - 97;
 }
@@ -36,10 +44,10 @@ export function getLines(editor: vscode.TextEditor): { firstLineNumber: number, 
     };
 }
 
-export function createTextEditorDecorationType() {
+export function createTextEditorDecorationType(charsToOffset: number) {
     return vscode.window.createTextEditorDecorationType({
         after: {
-            margin: '0 0 0 -14px',
+            margin: `0 0 0 ${charsToOffset * -7}px`,
             height: '13px',
             width: '14px'
         }
@@ -52,14 +60,19 @@ export function createDecorationOptions(line: number, startCharacter: number, en
         renderOptions: {
             dark: {
                 after: {
-                    contentIconPath: context.asAbsolutePath(`./images/dark/${code}.svg`)
+                    contentIconPath: darkDataUriCache[code]
                 }
             },
             light: {
                 after: {
-                    contentIconPath: context.asAbsolutePath(`./images/light/${code}.svg`)
+                    contentIconPath: lightDataUriCache[code]
                 }
             }
         }
     };
+}
+
+function getSvgDataUri(code: string, backgroundColor: string, fontColor: string) {
+    const width = code.length * 7;
+    return vscode.Uri.parse(`data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} 13" height="13" width="${width}"><rect width="${width}" height="13" rx="2" ry="2" style="fill: ${backgroundColor};"></rect><text font-family="Consolas" font-size="11px" fill="${fontColor}" x="1" y="10">${code}</text></svg>`);
 }
