@@ -33,7 +33,7 @@ You can also set up a special keybinding to exit `Jumpy mode`, for example `ESC`
     {
         "key": "Escape",
         "command": "extension.jumpy-exit",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus && jumpy.isJumpyMode"
     }
 ```
 

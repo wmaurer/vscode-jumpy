@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
     let firstLineNumber = 0;
 
     let isJumpyMode = false;
+    vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
     let firstKeyOfCode: string = null;
 
     function runJumpy(jumpyFn: JumpyFn, regexp: RegExp) {
@@ -36,12 +37,14 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset1, decorationsOffset1);
 
         isJumpyMode = true;
+        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', true);
         firstKeyOfCode = null;
     }
 
     function exitJumpyMode() {
         const editor = vscode.window.activeTextEditor;
         isJumpyMode = false;
+        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
     }
@@ -91,6 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
         isJumpyMode = false;
+        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
     });
 
     context.subscriptions.push(jumpyTypeDisposable);
