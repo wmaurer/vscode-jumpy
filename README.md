@@ -6,14 +6,16 @@ Jumpy provides fast cursor movement, inspired by Atom's package of the same name
 
 ## Commands
 
-When Jumpy is activated, decorators (two-letter codes) are created in the area around your cursor. Then simply type in a two letter code to jump to that position.
+When Jumpy is activated, decorations (two-letter codes) are created in the area around your cursor. Then simply type in a two letter code to jump to that position.
 
-Where the decorators are created is dependent on the command you use:
+Where the decorations are created is dependent on the command you use:
 
-* `extension.jumpy-word` (Jumpy Word Mode): decorates words in the area around your cursor
-* `extension.jumpy-line` (Jumpy Line Mode): decorates non-empty lines in the area around your cursor
+* `extension.jumpy-word` (Jumpy Word Mode): creates decorations for words in the area around your cursor
+* `extension.jumpy-line` (Jumpy Line Mode): creates decorations for non-empty lines in the area around your cursor
 
 No default keybindings have been provided with this extension to avoid conflicts. Instructions for setting up your own keybindings are [here](https://code.visualstudio.com/docs/customization/keybindings)
+
+To exit `Jumpy mode`, press a non-`a-z` key such as `space` or `enter`.
 
 To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (File -> Preferences -> Keyboard Shortcuts):
 
@@ -25,9 +27,21 @@ To set up the keybindings like Atom (`Shift+Enter`), add the following to your `
     }
 ```
 
-## WARNING
+You can also set up a special keybinding to exit `Jumpy mode`, for example `ESC`:
 
-This is an alpha release! More functionality, speed improvements and more are planned very soon.
+```
+    {
+        "key": "Escape",
+        "command": "extension.jumpy-exit",
+        "when": "editorTextFocus"
+    }
+```
+
+## Settings
+
+`"jumpy.wordRegexp"`: The Regexp to use to match words in `Jumpy Word Mode`. The default is `"\w{2,}"` which matches a string of characters `[A-Za-z0-9_]`, length two or more. To match individual words inside camel case, for example, override with `"([A-Z]+([0-9a-z])*)|[a-z0-9]{2,}"`.
+
+`"jumpy.lineRegexp"`: The Regexp to use to match empty lines (Jumpy won't create decorations for empty lines). The default is `"^\s*$"`
 
 ## Support
 

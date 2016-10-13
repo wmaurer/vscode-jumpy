@@ -3,10 +3,10 @@
   "displayName": "jumpy",
   "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.2.0",
   "publisher": "wmaurer",
   "engines": {
-    "vscode": "^1.5.0"
+    "vscode": "^1.6.0"
   },
   "categories": [
     "Other"
@@ -37,6 +37,10 @@
       {
         "command": "extension.jumpy-line",
         "title": "Jumpy Line Mode"
+      },
+      {
+        "command": "extension.jumpy-exit",
+        "title": "Exit Jumpy Mode"
       }
     ]
   },
@@ -46,11 +50,12 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.0.33",
+    "@types/bluebird": "^3.0.35",
     "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.40",
+    "@types/node": "^6.0.45",
     "bluebird": "^3.4.6",
     "mocha": "^2.3.3",
+    "tslint": "^3.15.1",
     "typescript": "^2.0.3",
     "vscode": "^1.0.0"
   }

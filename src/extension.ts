@@ -1,12 +1,16 @@
 'use strict';
 import * as vscode from 'vscode';
 
-import { createCodeArray, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
-import { JumpyPosition, jumpyWord, jumpyLine } from './jumpy-positions';
+import { createCodeArray, createDataUriCaches, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
+import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
 
 export function activate(context: vscode.ExtensionContext) {
     const codeArray = createCodeArray();
-    const decorationType = createTextEditorDecorationType();
+
+    createDataUriCaches(codeArray);
+
+    const decorationTypeOffset2 = createTextEditorDecorationType(2);
+    const decorationTypeOffset1 = createTextEditorDecorationType(1);
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;
@@ -14,28 +18,48 @@ export function activate(context: vscode.ExtensionContext) {
     let isJumpyMode = false;
     let firstKeyOfCode: string = null;
 
-    function runJumpy(jumpyFn: any) {
+    function runJumpy(jumpyFn: JumpyFn, regexp: RegExp) {
         const editor = vscode.window.activeTextEditor;
 
         const getLinesResult = getLines(editor);
-        positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines);
-        const decorations = positions
-            .map((position, i) => createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]));
+        positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
 
-        editor.setDecorations(decorationType, decorations);
+        const decorationsOffset2 = positions
+            .map((position, i) => position.charOffset == 1 ? null : createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]))
+            .filter(x => !!x);
+
+        const decorationsOffset1 = positions
+            .map((position, i) => position.charOffset == 2 ? null : createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]))
+            .filter(x => !!x);
+
+        editor.setDecorations(decorationTypeOffset2, decorationsOffset2);
+        editor.setDecorations(decorationTypeOffset1, decorationsOffset1);
 
         isJumpyMode = true;
         firstKeyOfCode = null;
     }
 
+    function exitJumpyMode() {
+        const editor = vscode.window.activeTextEditor;
+        isJumpyMode = false;
+        editor.setDecorations(decorationTypeOffset2, []);
+        editor.setDecorations(decorationTypeOffset1, []);
+    }
+
     let jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
-        runJumpy(jumpyWord);
+        const configuration = vscode.workspace.getConfiguration('jumpy');
+        const defaultRegexp = '\\w{2,}';
+        const wordRegexp = configuration ? configuration.get<string>('wordRegexp', defaultRegexp) : defaultRegexp;
+        runJumpy(jumpyWord, new RegExp(wordRegexp, 'g'));
     });
 
     context.subscriptions.push(jumpyWordDisposable);
 
     let jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
-        runJumpy(jumpyLine);
+        const configuration = vscode.workspace.getConfiguration('jumpy');
+        const defaultRegexp = '^\s*$';
+        const lineRegexp = configuration ? configuration.get<string>('lineRegexp', defaultRegexp) : defaultRegexp;
+        runJumpy(jumpyLine, new RegExp(lineRegexp));
     });
 
     context.subscriptions.push(jumpyLineDisposable);
@@ -50,8 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
         const text: string = args.text;
 
         if (text.search(/[a-z]/) === -1) {
-            isJumpyMode = false;
-            editor.setDecorations(decorationType, []);
+            exitJumpyMode();
             return;
         }
 
@@ -63,12 +86,20 @@ export function activate(context: vscode.ExtensionContext) {
         const code = firstKeyOfCode + text;
         const position = positions[getCodeIndex(code)];
 
-        editor.setDecorations(decorationType, []);
+        editor.setDecorations(decorationTypeOffset2, []);
+        editor.setDecorations(decorationTypeOffset1, []);
+
         vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
         isJumpyMode = false;
     });
 
     context.subscriptions.push(jumpyTypeDisposable);
+
+    let exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
+        exitJumpyMode();
+    });
+
+    context.subscriptions.push(exitJumpyModeDisposable);
 }
 
 export function deactivate() {
