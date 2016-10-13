@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     let jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
         const configuration = vscode.workspace.getConfiguration('jumpy');
-        const defaultRegexp = '^\s*$';
+        const defaultRegexp = '^\\s*$';
         const lineRegexp = configuration ? configuration.get<string>('lineRegexp', defaultRegexp) : defaultRegexp;
         runJumpy(jumpyLine, new RegExp(lineRegexp));
     });
