@@ -3,7 +3,7 @@
   "displayName": "jumpy",
   "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
   "license": "MIT",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "publisher": "wmaurer",
   "engines": {
     "vscode": "^1.6.0"
@@ -15,6 +15,12 @@
     "color": "#1e1e1e",
     "theme": "dark"
   },
+  "keywords": [
+    "jumpy",
+    "jump",
+    "AceJump",
+    "EasyMotion"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/wmaurer/vscode-jumpy.git"
@@ -25,7 +31,8 @@
   "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
   "activationEvents": [
     "onCommand:extension.jumpy-word",
-    "onCommand:extension.jumpy-line"
+    "onCommand:extension.jumpy-line",
+    "onCommand:extension.jumpy-exit"
   ],
   "main": "./out/src/extension",
   "contributes": {
