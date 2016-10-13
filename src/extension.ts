@@ -39,6 +39,13 @@ export function activate(context: vscode.ExtensionContext) {
         firstKeyOfCode = null;
     }
 
+    function exitJumpyMode() {
+        const editor = vscode.window.activeTextEditor;
+        isJumpyMode = false;
+        editor.setDecorations(decorationTypeOffset2, []);
+        editor.setDecorations(decorationTypeOffset1, []);
+    }
+
     let jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
         const configuration = vscode.workspace.getConfiguration('jumpy');
         const defaultRegexp = '\\w{2,}';
@@ -67,9 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
         const text: string = args.text;
 
         if (text.search(/[a-z]/) === -1) {
-            isJumpyMode = false;
-            editor.setDecorations(decorationTypeOffset2, []);
-            editor.setDecorations(decorationTypeOffset1, []);
+            exitJumpyMode();
             return;
         }
 
@@ -89,6 +94,12 @@ export function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(jumpyTypeDisposable);
+
+    let exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
+        exitJumpyMode();
+    });
+
+    context.subscriptions.push(exitJumpyModeDisposable);
 }
 
 export function deactivate() {

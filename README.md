@@ -6,16 +6,16 @@ Jumpy provides fast cursor movement, inspired by Atom's package of the same name
 
 ## Commands
 
-When Jumpy is activated, decoratorations (two-letter codes) are created in the area around your cursor. Then simply type in a two letter code to jump to that position.
+When Jumpy is activated, decorations (two-letter codes) are created in the area around your cursor. Then simply type in a two letter code to jump to that position.
 
-Where the decoratorations are created is dependent on the command you use:
+Where the decorations are created is dependent on the command you use:
 
 * `extension.jumpy-word` (Jumpy Word Mode): creates decorations for words in the area around your cursor
 * `extension.jumpy-line` (Jumpy Line Mode): creates decorations for non-empty lines in the area around your cursor
 
 No default keybindings have been provided with this extension to avoid conflicts. Instructions for setting up your own keybindings are [here](https://code.visualstudio.com/docs/customization/keybindings)
 
-To exit either `Jumpy mode`, press a non-`a-z` key such as `space` or `enter`.
+To exit `Jumpy mode`, press a non-`a-z` key such as `space` or `enter`.
 
 To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (File -> Preferences -> Keyboard Shortcuts):
 
@@ -23,6 +23,16 @@ To set up the keybindings like Atom (`Shift+Enter`), add the following to your `
     {
         "key": "shift+enter",
         "command": "extension.jumpy-word",
+        "when": "editorTextFocus"
+    }
+```
+
+You can also set up a special keybinding to exit `Jumpy mode`, for example `ESC`:
+
+```
+    {
+        "key": "Escape",
+        "command": "extension.jumpy-exit",
         "when": "editorTextFocus"
     }
 ```
