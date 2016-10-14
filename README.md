@@ -39,9 +39,9 @@ You can also set up a special keybinding to exit `Jumpy mode`, for example `ESC`
 
 ## Settings
 
-`"jumpy.wordRegexp"`: The Regexp to use to match words in `Jumpy Word Mode`. The default is `"\w{2,}"` which matches a string of characters `[A-Za-z0-9_]`, length two or more. To match individual words inside camel case, for example, override with `"([A-Z]+([0-9a-z])*)|[a-z0-9]{2,}"`.
+`"jumpy.wordRegexp"`: The Regexp to use to match words in `Jumpy Word Mode`. The default is `"\\w{2,}"` which matches a string of characters `[A-Za-z0-9_]`, length two or more. To match individual words inside camel case, for example, override with `"([A-Z]+([0-9a-z])*)|[a-z0-9]{2,}"`.
 
-`"jumpy.lineRegexp"`: The Regexp to use to match empty lines (Jumpy won't create decorations for empty lines). The default is `"^\s*$"`
+`"jumpy.lineRegexp"`: The Regexp to use to match empty lines (Jumpy won't create decorations for empty lines). The default is `"^\\s*$"`
 
 ## Support
 
