@@ -3,7 +3,7 @@
   "displayName": "jumpy",
   "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
   "license": "MIT",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "publisher": "wmaurer",
   "engines": {
     "vscode": "^1.6.0"
@@ -49,7 +49,23 @@
         "command": "extension.jumpy-exit",
         "title": "Exit Jumpy Mode"
       }
-    ]
+    ],
+    "configuration": {
+        "type": "object",
+        "title": "Jumpy Configuration",
+        "properties": {
+            "jumpy.wordRegexp": {
+                "type": "string",
+                "default": "\\w{2,}",
+                "description": "The Regexp to use to match words in Jumpy Word Mode"
+            },
+            "jumpy.lineRegexp": {
+                "type": "string",
+                "default": "^\\s*$",
+                "description": "The Regexp to use to match empty lines in Jumpy Line Mode"
+            }
+        }
+    }
   },
   "scripts": {
     "vscode:prepublish": "tsc -p ./",
