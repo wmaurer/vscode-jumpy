@@ -14,10 +14,14 @@ export function activate(context: vscode.ExtensionContext) {
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;
-
-    let isJumpyMode = false;
-    vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
+    let isJumpyMode: boolean = false;
+    setJumpyMode(false);
     let firstKeyOfCode: string = null;
+
+    function setJumpyMode(value: boolean) {
+        isJumpyMode = value;
+        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', value);
+    }
 
     function runJumpy(jumpyFn: JumpyFn, regexp: RegExp) {
         const editor = vscode.window.activeTextEditor;
@@ -36,35 +40,31 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset2, decorationsOffset2);
         editor.setDecorations(decorationTypeOffset1, decorationsOffset1);
 
-        isJumpyMode = true;
-        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', true);
+        setJumpyMode(true);
         firstKeyOfCode = null;
     }
 
     function exitJumpyMode() {
         const editor = vscode.window.activeTextEditor;
-        isJumpyMode = false;
-        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
+        setJumpyMode(false);
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
     }
 
-    let jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
+    const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
         const configuration = vscode.workspace.getConfiguration('jumpy');
         const defaultRegexp = '\\w{2,}';
         const wordRegexp = configuration ? configuration.get<string>('wordRegexp', defaultRegexp) : defaultRegexp;
         runJumpy(jumpyWord, new RegExp(wordRegexp, 'g'));
     });
-
     context.subscriptions.push(jumpyWordDisposable);
 
-    let jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
+    const jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
         const configuration = vscode.workspace.getConfiguration('jumpy');
         const defaultRegexp = '^\\s*$';
         const lineRegexp = configuration ? configuration.get<string>('lineRegexp', defaultRegexp) : defaultRegexp;
         runJumpy(jumpyLine, new RegExp(lineRegexp));
     });
-
     context.subscriptions.push(jumpyLineDisposable);
 
     const jumpyTypeDisposable = vscode.commands.registerCommand('type', args => {
@@ -93,17 +93,17 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset1, []);
 
         vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
-        isJumpyMode = false;
-        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', false);
+        setJumpyMode(false);
     });
-
     context.subscriptions.push(jumpyTypeDisposable);
 
-    let exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
+    const exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
         exitJumpyMode();
     });
-
     context.subscriptions.push(exitJumpyModeDisposable);
+
+    const didChangeActiveTextEditorDisposable = vscode.window.onDidChangeActiveTextEditor(event => exitJumpyMode());
+    context.subscriptions.push(didChangeActiveTextEditorDisposable);
 }
 
 export function deactivate() {
