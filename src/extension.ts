@@ -93,6 +93,10 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset1, []);
 
         vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
+
+        const reviewType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.Default;
+        vscode.window.activeTextEditor.revealRange(vscode.window.activeTextEditor.selection, reviewType);
+
         setJumpyMode(false);
     });
     context.subscriptions.push(jumpyTypeDisposable);
