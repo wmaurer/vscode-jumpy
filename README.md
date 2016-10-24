@@ -4,6 +4,8 @@
 
 Jumpy provides fast cursor movement, inspired by Atom's package of the same name.
 
+![jumpy-preview](https://cloud.githubusercontent.com/assets/2899448/19660934/0481c44c-9a32-11e6-87cc-1f8913922ccb.gif)
+
 ## Commands
 
 When Jumpy is activated, decorations (two-letter codes) are created in the area around your cursor. Then simply type in a two letter code to jump to that position.
