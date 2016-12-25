@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
         const editor = vscode.window.activeTextEditor;
         const text: string = args.text;
 
-        if (text.search(/[a-z]/) === -1) {
+        if (text.search(/[a-z]/i) === -1) {
             exitJumpyMode();
             return;
         }
@@ -87,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const code = firstKeyOfCode + text;
-        const position = positions[getCodeIndex(code)];
+        const position = positions[getCodeIndex(code.toLowerCase())];
 
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
