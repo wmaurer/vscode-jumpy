@@ -69,37 +69,37 @@
             "jumpy.fontFamily": {
                 "type": "string",
                 "default": "",
-                "description": "Controls the Jumpy marker font family (if empty - defaults to editor font family)"
+                "description": "Font used in Jumpy decorations, defaults to font from settings"
             },
 
             "jumpy.fontSize": {
                 "type": "number",
                 "default": 0,
-                "description": "Controls the Jumpy marker font size in pixels (if empty defaults to editor font size - 1)"
+                "description": "Font size used in Jumpy decorations, defaults to font size from settings - 1"
             },
 
             "jumpy.darkThemeBackground": {
                 "type": "string",
                 "default": "white",
-                "description": "Background of Jumpy marker in dark themes"
+                "description": "Background of Jumpy decoration in dark themes"
             },
 
             "jumpy.darkThemeForeground": {
                 "type": "string",
                 "default": "black",
-                "description": "Text color of Jumpy marker in dark themes"
+                "description": "Text color of Jumpy decoration in dark themes"
             },
 
             "jumpy.lightThemeBackground": {
                 "type": "string",
                 "default": "black",
-                "description": "Background of Jumpy marker in light themes"
+                "description": "Background of Jumpy decoration in light themes"
             },
 
             "jumpy.lightThemeForeground": {
                 "type": "string",
                 "default": "white",
-                "description": "Text color of Jumpy marker in light themes"
+                "description": "Text color of Jumpy decoration in light themes"
             }
         }
     }
