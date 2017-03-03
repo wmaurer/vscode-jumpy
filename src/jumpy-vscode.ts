@@ -55,10 +55,11 @@ export function getLines(editor: vscode.TextEditor): { firstLineNumber: number, 
 
 export function createTextEditorDecorationType(dec: Decoration) {
     const width = dec.fontSize + 6;
+    const left = -width + 2;
 
     return vscode.window.createTextEditorDecorationType({
         after: {
-            margin: `0 0 0 -${width}px`,
+            margin: `0 0 0 ${left}px`,
             height: '${dec.fontSize}px',
             width: `${width}px`
         }
