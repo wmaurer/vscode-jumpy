@@ -19,7 +19,7 @@ No default keybindings have been provided with this extension to avoid conflicts
 
 To exit `Jumpy mode`, press a non-`a-z` key such as `space` or `enter`.
 
-To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (File -> Preferences -> Keyboard Shortcuts):
+To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (Code -> Preferences -> Keyboard Shortcuts):
 
 ```
     {
