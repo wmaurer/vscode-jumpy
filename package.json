@@ -73,7 +73,7 @@
                 "jumpy.fontSize": {
                     "type": "number",
                     "default": 0,
-                    "description": "Font size used in Jumpy decorations, defaults to font size from settings - 1"
+                    "description": "Font size used in Jumpy decorations, defaults to font size from settings"
                 },
                 "jumpy.darkThemeBackground": {
                     "type": "string",
