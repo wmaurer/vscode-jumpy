@@ -1,16 +1,42 @@
 'use strict';
 import * as vscode from 'vscode';
 
-import { createCodeArray, createDataUriCaches, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
+import { Decoration, createCodeArray, createDataUriCaches, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
 
 export function activate(context: vscode.ExtensionContext) {
     const codeArray = createCodeArray();
 
-    createDataUriCaches(codeArray);
+    // decorations, based on configuration
+    const editorConfig = vscode.workspace.getConfiguration('editor');
+    const configuration = vscode.workspace.getConfiguration('jumpy');
 
-    const decorationTypeOffset2 = createTextEditorDecorationType(2);
-    const decorationTypeOffset1 = createTextEditorDecorationType(1);
+    let fontFamily = configuration.get<string>('fontFamily');
+    fontFamily = fontFamily || editorConfig.get<string>('fontFamily');
+
+    let fontSize = configuration.get<number>('fontSize');
+    fontSize = fontSize || (editorConfig.get<number>('fontSize') - 1);
+
+    const colors = {
+        darkBgColor: configuration.get<string>('darkThemeBackground'),
+        darkFgColor: configuration.get<string>('darkThemeForeground'),
+        lightBgColor: configuration.get<string>('lightThemeBackground'),
+        lightFgColor: configuration.get<string>('lightThemeForeground')
+    }
+
+    const darkDecoration = {
+        bgColor: colors.darkBgColor, fgColor: colors.darkFgColor,
+        fontFamily: fontFamily, fontSize: fontSize
+    };
+    const lightDecoration = {
+        bgColor: colors.lightBgColor, fgColor: colors.lightFgColor,
+        fontFamily: fontFamily, fontSize: fontSize
+    };
+
+    createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+
+    const decorationTypeOffset2 = createTextEditorDecorationType(darkDecoration);
+    const decorationTypeOffset1 = createTextEditorDecorationType(darkDecoration);
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;

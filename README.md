@@ -47,6 +47,18 @@ Jumpy settings can be configured by adding entries into your `settings.json` (Fi
 
 `"jumpy.lineRegexp"`: The Regexp to use to match empty lines (Jumpy won't create decorations for empty lines). The default is `"^\\s*$"`
 
+`"jumpy.fontFamily"`: Font used in Jumpy decorations, defaults to font from settings
+
+`"jumpy.fontSize"`: Font size used in Jumpy decorations, defaults to font size from settings - 1
+
+`"jumpy.darkThemeBackground"`: Background of Jumpy decoration in dark themes
+
+`"jumpy.darkThemeForeground"`: Text color of Jumpy decoration in dark themes
+
+`"jumpy.lightThemeBackground"`: Background of Jumpy decoration in light themes
+
+`"jumpy.lightThemeForeground"`: Text color of Jumpy decoration in light themes
+
 ## Support
 
 [Create an issue](https://github.com/wmaurer/vscode-jumpy/issues)
