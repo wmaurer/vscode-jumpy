@@ -1,7 +1,15 @@
 'use strict';
 import * as vscode from 'vscode';
 
-import { Decoration, createCodeArray, createDataUriCaches, getCodeIndex, getLines, createTextEditorDecorationType, createDecorationOptions } from './jumpy-vscode';
+import {
+    Decoration,
+    createCodeArray,
+    createDataUriCaches,
+    getCodeIndex,
+    getLines,
+    createTextEditorDecorationType,
+    createDecorationOptions,
+} from './jumpy-vscode';
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -15,22 +23,26 @@ export function activate(context: vscode.ExtensionContext) {
     fontFamily = fontFamily || editorConfig.get<string>('fontFamily');
 
     let fontSize = configuration.get<number>('fontSize');
-    fontSize = fontSize || (editorConfig.get<number>('fontSize') - 1);
+    fontSize = fontSize || editorConfig.get<number>('fontSize') - 1;
 
     const colors = {
         darkBgColor: configuration.get<string>('darkThemeBackground'),
         darkFgColor: configuration.get<string>('darkThemeForeground'),
         lightBgColor: configuration.get<string>('lightThemeBackground'),
-        lightFgColor: configuration.get<string>('lightThemeForeground')
-    }
+        lightFgColor: configuration.get<string>('lightThemeForeground'),
+    };
 
     const darkDecoration = {
-        bgColor: colors.darkBgColor, fgColor: colors.darkFgColor,
-        fontFamily: fontFamily, fontSize: fontSize
+        bgColor: colors.darkBgColor,
+        fgColor: colors.darkFgColor,
+        fontFamily: fontFamily,
+        fontSize: fontSize,
     };
     const lightDecoration = {
-        bgColor: colors.lightBgColor, fgColor: colors.lightFgColor,
-        fontFamily: fontFamily, fontSize: fontSize
+        bgColor: colors.lightBgColor,
+        fgColor: colors.lightFgColor,
+        fontFamily: fontFamily,
+        fontSize: fontSize,
     };
 
     createDataUriCaches(codeArray, darkDecoration, lightDecoration);
@@ -56,11 +68,33 @@ export function activate(context: vscode.ExtensionContext) {
         positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
 
         const decorationsOffset2 = positions
-            .map((position, i) => position.charOffset == 1 ? null : createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]))
+            .map(
+                (position, i) =>
+                    position.charOffset == 1
+                        ? null
+                        : createDecorationOptions(
+                              position.line,
+                              position.character,
+                              position.character + 2,
+                              context,
+                              codeArray[i],
+                          ),
+            )
             .filter(x => !!x);
 
         const decorationsOffset1 = positions
-            .map((position, i) => position.charOffset == 2 ? null : createDecorationOptions(position.line, position.character, position.character + 2, context, codeArray[i]))
+            .map(
+                (position, i) =>
+                    position.charOffset == 2
+                        ? null
+                        : createDecorationOptions(
+                              position.line,
+                              position.character,
+                              position.character + 2,
+                              context,
+                              codeArray[i],
+                          ),
+            )
             .filter(x => !!x);
 
         editor.setDecorations(decorationTypeOffset2, decorationsOffset2);
@@ -118,7 +152,12 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
 
-        vscode.window.activeTextEditor.selection = new vscode.Selection(position.line, position.character, position.line, position.character);
+        vscode.window.activeTextEditor.selection = new vscode.Selection(
+            position.line,
+            position.character,
+            position.line,
+            position.character,
+        );
 
         const reviewType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.Default;
         vscode.window.activeTextEditor.revealRange(vscode.window.activeTextEditor.selection, reviewType);
@@ -136,5 +175,4 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(didChangeActiveTextEditorDisposable);
 }
 
-export function deactivate() {
-}
+export function deactivate() {}

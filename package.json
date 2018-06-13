@@ -1,116 +1,118 @@
 {
-  "name": "vscode-jumpy",
-  "displayName": "jumpy",
-  "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
-  "icon": "images/jumpy-icon.png",
-  "license": "MIT",
-  "version": "0.3.1",
-  "publisher": "wmaurer",
-  "engines": {
-    "vscode": "^1.6.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "galleryBanner": {
-    "color": "#1e1e1e",
-    "theme": "dark"
-  },
-  "keywords": [
-    "jumpy",
-    "jump",
-    "AceJump",
-    "EasyMotion"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/wmaurer/vscode-jumpy.git"
-  },
-  "bugs": {
-    "url": "https://github.com/wmaurer/vscode-jumpy/issues"
-  },
-  "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
-  "activationEvents": [
-    "onCommand:extension.jumpy-word",
-    "onCommand:extension.jumpy-line",
-    "onCommand:extension.jumpy-exit"
-  ],
-  "main": "./out/src/extension",
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension.jumpy-word",
-        "title": "Jumpy Word Mode"
-      },
-      {
-        "command": "extension.jumpy-line",
-        "title": "Jumpy Line Mode"
-      },
-      {
-        "command": "extension.jumpy-exit",
-        "title": "Exit Jumpy Mode"
-      }
+    "name": "vscode-jumpy",
+    "displayName": "jumpy",
+    "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
+    "icon": "images/jumpy-icon.png",
+    "license": "MIT",
+    "version": "0.3.1",
+    "publisher": "wmaurer",
+    "engines": {
+        "vscode": "^1.6.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "configuration": {
-      "type": "object",
-      "title": "Jumpy Configuration",
-      "properties": {
-        "jumpy.wordRegexp": {
-          "type": "string",
-          "default": "\\w{2,}",
-          "description": "The Regexp to use to match words in Jumpy Word Mode"
-        },
-        "jumpy.lineRegexp": {
-          "type": "string",
-          "default": "^\\s*$",
-          "description": "The Regexp to use to match empty lines in Jumpy Line Mode"
-        },
-        "jumpy.fontFamily": {
-          "type": "string",
-          "default": "",
-          "description": "Font used in Jumpy decorations, defaults to font from settings"
-        },
-        "jumpy.fontSize": {
-          "type": "number",
-          "default": 0,
-          "description": "Font size used in Jumpy decorations, defaults to font size from settings - 1"
-        },
-        "jumpy.darkThemeBackground": {
-          "type": "string",
-          "default": "white",
-          "description": "Background of Jumpy decoration in dark themes"
-        },
-        "jumpy.darkThemeForeground": {
-          "type": "string",
-          "default": "black",
-          "description": "Text color of Jumpy decoration in dark themes"
-        },
-        "jumpy.lightThemeBackground": {
-          "type": "string",
-          "default": "black",
-          "description": "Background of Jumpy decoration in light themes"
-        },
-        "jumpy.lightThemeForeground": {
-          "type": "string",
-          "default": "white",
-          "description": "Text color of Jumpy decoration in light themes"
+    "galleryBanner": {
+        "color": "#1e1e1e",
+        "theme": "dark"
+    },
+    "keywords": [
+        "jumpy",
+        "jump",
+        "AceJump",
+        "EasyMotion"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/wmaurer/vscode-jumpy.git"
+    },
+    "bugs": {
+        "url": "https://github.com/wmaurer/vscode-jumpy/issues"
+    },
+    "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
+    "activationEvents": [
+        "onCommand:extension.jumpy-word",
+        "onCommand:extension.jumpy-line",
+        "onCommand:extension.jumpy-exit"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.jumpy-word",
+                "title": "Jumpy Word Mode"
+            },
+            {
+                "command": "extension.jumpy-line",
+                "title": "Jumpy Line Mode"
+            },
+            {
+                "command": "extension.jumpy-exit",
+                "title": "Exit Jumpy Mode"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Jumpy Configuration",
+            "properties": {
+                "jumpy.wordRegexp": {
+                    "type": "string",
+                    "default": "\\w{2,}",
+                    "description": "The Regexp to use to match words in Jumpy Word Mode"
+                },
+                "jumpy.lineRegexp": {
+                    "type": "string",
+                    "default": "^\\s*$",
+                    "description": "The Regexp to use to match empty lines in Jumpy Line Mode"
+                },
+                "jumpy.fontFamily": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Font used in Jumpy decorations, defaults to font from settings"
+                },
+                "jumpy.fontSize": {
+                    "type": "number",
+                    "default": 0,
+                    "description": "Font size used in Jumpy decorations, defaults to font size from settings - 1"
+                },
+                "jumpy.darkThemeBackground": {
+                    "type": "string",
+                    "default": "white",
+                    "description": "Background of Jumpy decoration in dark themes"
+                },
+                "jumpy.darkThemeForeground": {
+                    "type": "string",
+                    "default": "black",
+                    "description": "Text color of Jumpy decoration in dark themes"
+                },
+                "jumpy.lightThemeBackground": {
+                    "type": "string",
+                    "default": "black",
+                    "description": "Background of Jumpy decoration in light themes"
+                },
+                "jumpy.lightThemeForeground": {
+                    "type": "string",
+                    "default": "white",
+                    "description": "Text color of Jumpy decoration in light themes"
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "vscode:prepublish": "tsc -p ./",
+        "compile": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "format": "prettier ./**/*.{ts,json} --write"
+    },
+    "devDependencies": {
+        "@types/bluebird": "^3.0.35",
+        "@types/mocha": "^2.2.32",
+        "@types/node": "^6.0.45",
+        "bluebird": "^3.4.6",
+        "mocha": "^5.2.0",
+        "prettier": "^1.13.5",
+        "tslint": "^3.15.1",
+        "typescript": "^2.0.3",
+        "vscode": "^1.0.0"
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "tsc -p ./",
-    "compile": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install"
-  },
-  "devDependencies": {
-    "@types/bluebird": "^3.0.35",
-    "@types/mocha": "^2.2.32",
-    "@types/node": "^6.0.45",
-    "bluebird": "^3.4.6",
-    "mocha": "^5.2.0",
-    "tslint": "^3.15.1",
-    "typescript": "^2.0.3",
-    "vscode": "^1.0.0"
-  }
 }
