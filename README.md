@@ -12,14 +12,14 @@ When Jumpy is activated, decorations (two-letter codes) are created in the area 
 
 Where the decorations are created is dependent on the command you use:
 
-* `extension.jumpy-word` (Jumpy Word Mode): creates decorations for words in the area around your cursor
-* `extension.jumpy-line` (Jumpy Line Mode): creates decorations for non-empty lines in the area around your cursor
+-   `extension.jumpy-word` (Jumpy Word Mode): creates decorations for words in the area around your cursor
+-   `extension.jumpy-line` (Jumpy Line Mode): creates decorations for non-empty lines in the area around your cursor
 
 No default keybindings have been provided with this extension to avoid conflicts. Instructions for setting up your own keybindings are [here](https://code.visualstudio.com/docs/customization/keybindings)
 
 To exit `Jumpy mode`, press a non-`a-z` key such as `space` or `enter`.
 
-To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (Code -> Preferences -> Keyboard Shortcuts):
+To set up the keybindings like Atom (`Shift+Enter`), add the following to your `keybindings.json` (File/Code -> Preferences -> Keyboard Shortcuts):
 
 ```
     {
