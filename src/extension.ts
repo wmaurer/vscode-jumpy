@@ -52,16 +52,58 @@ export function activate(context: vscode.ExtensionContext) {
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;
-    let isJumpyMode: boolean = false;
     setJumpyMode(false);
     let firstKeyOfCode: string = null;
+    let jumpyTypeDisposable = null;
 
     function setJumpyMode(value: boolean) {
-        isJumpyMode = value;
         vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', value);
     }
 
+    function deregisterTypeCommand() {
+        jumpyTypeDisposable && jumpyTypeDisposable.dispose();
+        jumpyTypeDisposable = null;
+    }
+
+    function registerTypeCommand() {
+        return vscode.commands.registerCommand('type', args => {
+            const editor = vscode.window.activeTextEditor;
+            const text: string = args.text;
+
+            if (text.search(/[a-z]/i) === -1) {
+                exitJumpyMode();
+                return;
+            }
+
+            if (!firstKeyOfCode) {
+                firstKeyOfCode = text;
+                return;
+            }
+
+            const code = firstKeyOfCode + text;
+            const position = positions[getCodeIndex(code.toLowerCase())];
+
+            editor.setDecorations(decorationTypeOffset2, []);
+            editor.setDecorations(decorationTypeOffset1, []);
+
+            vscode.window.activeTextEditor.selection = new vscode.Selection(
+                position.line,
+                position.character,
+                position.line,
+                position.character,
+            );
+
+            const reviewType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.Default;
+            vscode.window.activeTextEditor.revealRange(vscode.window.activeTextEditor.selection, reviewType);
+
+            deregisterTypeCommand();
+        });
+    }
+
     function runJumpy(jumpyFn: JumpyFn, regexp: RegExp) {
+        jumpyTypeDisposable = registerTypeCommand();
+        context.subscriptions.push(jumpyTypeDisposable);
+
         const editor = vscode.window.activeTextEditor;
 
         const getLinesResult = getLines(editor);
@@ -109,6 +151,7 @@ export function activate(context: vscode.ExtensionContext) {
         setJumpyMode(false);
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
+        deregisterTypeCommand();
     }
 
     const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
@@ -126,45 +169,6 @@ export function activate(context: vscode.ExtensionContext) {
         runJumpy(jumpyLine, new RegExp(lineRegexp));
     });
     context.subscriptions.push(jumpyLineDisposable);
-
-    const jumpyTypeDisposable = vscode.commands.registerCommand('type', args => {
-        if (!isJumpyMode) {
-            vscode.commands.executeCommand('default:type', args);
-            return;
-        }
-
-        const editor = vscode.window.activeTextEditor;
-        const text: string = args.text;
-
-        if (text.search(/[a-z]/i) === -1) {
-            exitJumpyMode();
-            return;
-        }
-
-        if (!firstKeyOfCode) {
-            firstKeyOfCode = text;
-            return;
-        }
-
-        const code = firstKeyOfCode + text;
-        const position = positions[getCodeIndex(code.toLowerCase())];
-
-        editor.setDecorations(decorationTypeOffset2, []);
-        editor.setDecorations(decorationTypeOffset1, []);
-
-        vscode.window.activeTextEditor.selection = new vscode.Selection(
-            position.line,
-            position.character,
-            position.line,
-            position.character,
-        );
-
-        const reviewType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.Default;
-        vscode.window.activeTextEditor.revealRange(vscode.window.activeTextEditor.selection, reviewType);
-
-        setJumpyMode(false);
-    });
-    context.subscriptions.push(jumpyTypeDisposable);
 
     const exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
         exitJumpyMode();
