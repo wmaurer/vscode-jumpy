@@ -59,6 +59,10 @@ Jumpy settings can be configured by adding entries into your `settings.json` (Fi
 
 `"jumpy.lightThemeForeground"`: Text color of Jumpy decoration in light themes
 
+`"jumpy.codeChars"`: Characters used to generate code
+
+`"jumpy.codeLength"`: Code length, need to greater than 1
+
 ## Support
 
 [Create an issue](https://github.com/wmaurer/vscode-jumpy/issues)

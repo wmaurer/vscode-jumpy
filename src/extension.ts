@@ -3,9 +3,10 @@ import * as vscode from 'vscode';
 
 import {
     Decoration,
+    createCharArray,
     createCodeArray,
     createDataUriCaches,
-    getCodeIndex,
+    getCodeIndices,
     getLines,
     createTextEditorDecorationType,
     createDecorationOptions,
@@ -13,48 +14,61 @@ import {
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
 
 export function activate(context: vscode.ExtensionContext) {
-    const codeArray = createCodeArray();
+    // configrations
+    let fontFamily: string = "";
+    let fontSize: number = 1;
+    let darkDecoration: Decoration = null;
+    let lightDecoration: Decoration = null;
 
-    // decorations, based on configuration
-    const editorConfig = vscode.workspace.getConfiguration('editor');
-    const configuration = vscode.workspace.getConfiguration('jumpy');
+    let codeChars: string = "";
+    let codeLength: number = 1;
 
-    let fontFamily = configuration.get<string>('fontFamily');
-    fontFamily = fontFamily || editorConfig.get<string>('fontFamily');
+    loadConfiguration();
 
-    let fontSize = configuration.get<number>('fontSize');
-    fontSize = fontSize || editorConfig.get<number>('fontSize') - 1;
+    // property
+    let positions: JumpyPosition[] = [];
+    let isJumpyMode: boolean = false;
+    let keysOfCode: string[] = [];
 
-    const colors = {
-        darkBgColor: configuration.get<string>('darkThemeBackground'),
-        darkFgColor: configuration.get<string>('darkThemeForeground'),
-        lightBgColor: configuration.get<string>('lightThemeBackground'),
-        lightFgColor: configuration.get<string>('lightThemeForeground'),
-    };
-
-    const darkDecoration = {
-        bgColor: colors.darkBgColor,
-        fgColor: colors.darkFgColor,
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-    };
-    const lightDecoration = {
-        bgColor: colors.lightBgColor,
-        fgColor: colors.lightFgColor,
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-    };
+    let charArray: string[] = createCharArray(codeChars);
+    let codeArray: string[] = createCodeArray(charArray, codeLength);
+    const decorationType = createTextEditorDecorationType();
 
     createDataUriCaches(codeArray, darkDecoration, lightDecoration);
-
-    const decorationTypeOffset2 = createTextEditorDecorationType(darkDecoration);
-    const decorationTypeOffset1 = createTextEditorDecorationType(darkDecoration);
-
-    let positions: JumpyPosition[] = null;
-    let firstLineNumber = 0;
-    let isJumpyMode: boolean = false;
     setJumpyMode(false);
-    let firstKeyOfCode: string = null;
+
+    function loadConfiguration() {
+        const editorConfig = vscode.workspace.getConfiguration('editor');
+        const configuration = vscode.workspace.getConfiguration('jumpy');
+
+        fontFamily = configuration.get<string>('fontFamily');
+        fontFamily = fontFamily || editorConfig.get<string>('fontFamily');
+        fontSize = configuration.get<number>('fontSize');
+        fontSize = fontSize || editorConfig.get<number>('fontSize') - 1;
+
+        const colors = {
+            darkBgColor: configuration.get<string>('darkThemeBackground'),
+            darkFgColor: configuration.get<string>('darkThemeForeground'),
+            lightBgColor: configuration.get<string>('lightThemeBackground'),
+            lightFgColor: configuration.get<string>('lightThemeForeground'),
+        };
+
+        darkDecoration = {
+            bgColor: colors.darkBgColor,
+            fgColor: colors.darkFgColor,
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+        };
+        lightDecoration = {
+            bgColor: colors.lightBgColor,
+            fgColor: colors.lightFgColor,
+            fontFamily: fontFamily,
+            fontSize: fontSize,
+        };
+
+        codeChars = configuration.get<string>('codeChars');
+        codeLength = Math.max(configuration.get<number>('codeLength'), 1);
+    }
 
     function setJumpyMode(value: boolean) {
         isJumpyMode = value;
@@ -67,48 +81,26 @@ export function activate(context: vscode.ExtensionContext) {
         const getLinesResult = getLines(editor);
         positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
 
-        const decorationsOffset2 = positions
-            .map(
-                (position, i) =>
-                    position.charOffset == 1
-                        ? null
-                        : createDecorationOptions(
-                              position.line,
-                              position.character,
-                              position.character + 2,
-                              context,
-                              codeArray[i],
-                          ),
-            )
-            .filter(x => !!x);
+        const decorations = positions
+            .map((position, i) =>
+                createDecorationOptions(
+                    position.line,
+                    position.character,
+                    codeArray[i]
+                )
+            );
 
-        const decorationsOffset1 = positions
-            .map(
-                (position, i) =>
-                    position.charOffset == 2
-                        ? null
-                        : createDecorationOptions(
-                              position.line,
-                              position.character,
-                              position.character + 2,
-                              context,
-                              codeArray[i],
-                          ),
-            )
-            .filter(x => !!x);
-
-        editor.setDecorations(decorationTypeOffset2, decorationsOffset2);
-        editor.setDecorations(decorationTypeOffset1, decorationsOffset1);
+        editor.setDecorations(decorationType, decorations);
 
         setJumpyMode(true);
-        firstKeyOfCode = null;
+        keysOfCode = [];
     }
 
     function exitJumpyMode() {
         const editor = vscode.window.activeTextEditor;
         setJumpyMode(false);
-        editor.setDecorations(decorationTypeOffset2, []);
-        editor.setDecorations(decorationTypeOffset1, []);
+
+        editor.setDecorations(decorationType, []);
     }
 
     const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
@@ -136,22 +128,29 @@ export function activate(context: vscode.ExtensionContext) {
         const editor = vscode.window.activeTextEditor;
         const text: string = args.text;
 
-        if (text.search(/[a-z]/i) === -1) {
+        let regexp = new RegExp('[' + charArray.join("") + ']', 'i');
+        if (text.search(regexp) === -1) {
             exitJumpyMode();
             return;
         }
 
-        if (!firstKeyOfCode) {
-            firstKeyOfCode = text;
+        keysOfCode.push(text);
+        const indices: number[] = getCodeIndices(positions.length, codeArray, keysOfCode.join("").toLowerCase());
+
+        // invalid char
+        if (indices.length == 0) {
+            exitJumpyMode();
             return;
         }
 
-        const code = firstKeyOfCode + text;
-        const position = positions[getCodeIndex(code.toLowerCase())];
+        // not unique
+        if (indices.length != 1) {
+            return;
+        }
 
-        editor.setDecorations(decorationTypeOffset2, []);
-        editor.setDecorations(decorationTypeOffset1, []);
+        editor.setDecorations(decorationType, []);
 
+        const position = positions[indices[0]];
         vscode.window.activeTextEditor.selection = new vscode.Selection(
             position.line,
             position.character,
@@ -173,6 +172,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     const didChangeActiveTextEditorDisposable = vscode.window.onDidChangeActiveTextEditor(event => exitJumpyMode());
     context.subscriptions.push(didChangeActiveTextEditorDisposable);
+
+    const didChangeConfigurationDisposable = vscode.workspace.onDidChangeConfiguration(event => {
+        loadConfiguration();
+
+        charArray = createCharArray(codeChars);
+        codeArray = createCodeArray(charArray, codeLength);
+        createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+    });
+    context.subscriptions.push(didChangeConfigurationDisposable);
 }
 
-export function deactivate() {}
+export function deactivate() { }
