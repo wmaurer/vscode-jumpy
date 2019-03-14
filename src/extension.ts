@@ -145,6 +145,16 @@ export function activate(context: vscode.ExtensionContext) {
 
         // not unique
         if (indices.length != 1) {
+            const decorations = indices
+                .map((index, i) =>
+                    createDecorationOptions(
+                        positions[index].line,
+                        positions[index].character,
+                        codeArray[index]
+                    )
+                )
+
+            editor.setDecorations(decorationType, decorations);
             return;
         }
 
