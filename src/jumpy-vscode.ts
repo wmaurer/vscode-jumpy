@@ -9,7 +9,7 @@ export function createCharArray(chars: string): string[] {
     });
 }
 
-export function createCodeArray(chars: string[], length: number): string[] {
+export function createFixedCodeArray(chars: string[], length: number): string[] {
     let createArray = function (arr: string[], word: string, d: number) {
         d -= 1;
         chars.forEach(function (val: string) {
@@ -25,6 +25,21 @@ export function createCodeArray(chars: string[], length: number): string[] {
 
     return createArray([], '', length);;
 };
+
+// Returns a list of hint strings which will uniquely identify the given number of links.The hint strings may be of different lengths.
+// https://github.com/philc/vimium
+export function createVariableCodeArray(chars: string[], count: number): string[] {
+    let hints = [""];
+    let offset = 0;
+    while ((hints.length - offset < count) || (hints.length == 1)) {
+        let hint = hints[offset++];
+        chars.forEach(function (val: string) {
+            hints.push(hint + val);
+        });
+    }
+
+    return hints.slice(offset, offset + count);
+}
 
 export interface Decoration {
     bgColor: string;
@@ -71,7 +86,9 @@ export function getLines(editor: vscode.TextEditor): { firstLineNumber: number; 
 export function createTextEditorDecorationType(): vscode.TextEditorDecorationType {
     return vscode.window.createTextEditorDecorationType({
         before: {
-            margin: `0 0 0 0px; position: absolute`
+            // this is very tricky...
+            margin: `0 0 0 0px; position: relative; z-index: 99`,
+            width: `0px`
         },
     });
 }

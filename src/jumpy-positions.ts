@@ -14,10 +14,10 @@ export function jumpyWord(
     regexp: RegExp,
 ): JumpyPosition[] {
     const positions: JumpyPosition[] = [];
-    for (let i = 0; i < lines.length && positions.length < maxDecorations; i++) {
+    for (let i = 0; i < lines.length && isValidIndex(positions.length, maxDecorations); i++) {
         let lineText = lines[i];
         let word: RegExpExecArray;
-        while (!!(word = regexp.exec(lineText)) && positions.length < maxDecorations) {
+        while (!!(word = regexp.exec(lineText)) && isValidIndex(positions.length, maxDecorations)) {
             positions.push({
                 line: i + firstLineNumber,
                 character: word.index,
@@ -34,7 +34,7 @@ export function jumpyLine(
     regexp: RegExp,
 ): JumpyPosition[] {
     const positions: JumpyPosition[] = [];
-    for (let i = 0; i < lines.length && positions.length < maxDecorations; i++) {
+    for (let i = 0; i < lines.length && isValidIndex(positions.length, maxDecorations); i++) {
         if (!lines[i].match(regexp)) {
             positions.push({
                 line: i + firstLineNumber,
@@ -44,3 +44,8 @@ export function jumpyLine(
     }
     return positions;
 }
+
+function isValidIndex(index: number, max: number): boolean {
+    if (max < 0) return true;
+    return (index < max);
+};

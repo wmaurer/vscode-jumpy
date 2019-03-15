@@ -95,15 +95,24 @@
                     "default": "white",
                     "description": "Text color of Jumpy decoration in light themes"
                 },
+                "jumpy.codeCreatingMode": {
+                    "type": "string",
+                    "default": "Fixed",
+                    "description": "Mode of creating code length (Fixed or Variable)",
+                    "enum": [
+                        "Fixed",
+                        "Variable"
+                    ]
+                },
                 "jumpy.codeChars": {
                     "type": "string",
                     "default": "abcdefghijklmnopqrstuvwxyz",
                     "description": "Characters used to generate code"
                 },
-                "jumpy.codeLength": {
+                "jumpy.fixedCodeLength": {
                     "type": "number",
                     "default": 2,
-                    "description": "Code length, need to greater than 1"
+                    "description": "[Fixed mode only] Fixed code length, need to greater than 1"
                 }
             }
         }

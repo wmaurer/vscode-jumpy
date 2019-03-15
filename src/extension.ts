@@ -4,7 +4,8 @@ import * as vscode from 'vscode';
 import {
     Decoration,
     createCharArray,
-    createCodeArray,
+    createFixedCodeArray,
+    createVariableCodeArray,
     createDataUriCaches,
     getCodeIndices,
     getLines,
@@ -14,14 +15,20 @@ import {
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
 
 export function activate(context: vscode.ExtensionContext) {
+    enum CodeType {
+        Fixed,
+        Variable
+    };
+
     // configrations
     let fontFamily: string = "";
     let fontSize: number = 1;
     let darkDecoration: Decoration = null;
     let lightDecoration: Decoration = null;
 
+    let codeType: CodeType = CodeType.Fixed;
     let codeChars: string = "";
-    let codeLength: number = 1;
+    let fixedCodeLength: number = 1;
 
     loadConfiguration();
 
@@ -30,12 +37,19 @@ export function activate(context: vscode.ExtensionContext) {
     let isJumpyMode: boolean = false;
     let keysOfCode: string[] = [];
 
-    let charArray: string[] = createCharArray(codeChars);
-    let codeArray: string[] = createCodeArray(charArray, codeLength);
+    let charArray: string[] = [];
+    let codeArray: string[] = [];
     const decorationType = createTextEditorDecorationType();
 
-    createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+    charArray = createCharArray(codeChars);
+    if (codeType == CodeType.Fixed) {
+        codeArray = createFixedCodeArray(charArray, fixedCodeLength);
+        createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+    }
+
     setJumpyMode(false);
+
+    console.log(fontFamily)
 
     function loadConfiguration() {
         const editorConfig = vscode.workspace.getConfiguration('editor');
@@ -66,8 +80,9 @@ export function activate(context: vscode.ExtensionContext) {
             fontSize: fontSize,
         };
 
+        codeType = CodeType[configuration.get<string>('codeCreatingMode')];
         codeChars = configuration.get<string>('codeChars');
-        codeLength = Math.max(configuration.get<number>('codeLength'), 1);
+        fixedCodeLength = Math.max(configuration.get<number>('fixedCodeLength'), 1);
     }
 
     function setJumpyMode(value: boolean) {
@@ -79,7 +94,13 @@ export function activate(context: vscode.ExtensionContext) {
         const editor = vscode.window.activeTextEditor;
 
         const getLinesResult = getLines(editor);
-        positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
+        const maxDecorations = (codeType == CodeType.Fixed) ? codeArray.length : -1;
+        positions = jumpyFn(maxDecorations, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
+
+        if (codeType == CodeType.Variable) {
+            codeArray = createVariableCodeArray(charArray, positions.length);
+            createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+        }
 
         const decorations = positions
             .map((position, i) =>
@@ -89,6 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
                     codeArray[i]
                 )
             );
+        console.log(decorations)
 
         editor.setDecorations(decorationType, decorations);
 
@@ -187,8 +209,10 @@ export function activate(context: vscode.ExtensionContext) {
         loadConfiguration();
 
         charArray = createCharArray(codeChars);
-        codeArray = createCodeArray(charArray, codeLength);
-        createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+        if (codeType == CodeType.Fixed) {
+            codeArray = createFixedCodeArray(charArray, fixedCodeLength);
+            createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+        }
     });
     context.subscriptions.push(didChangeConfigurationDisposable);
 }
