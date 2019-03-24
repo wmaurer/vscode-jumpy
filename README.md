@@ -59,6 +59,15 @@ Jumpy settings can be configured by adding entries into your `settings.json` (Fi
 
 `"jumpy.lightThemeForeground"`: Text color of Jumpy decoration in light themes
 
+`"jumpy.codeCreatingMode"`: Mode of creating code lenght
+
+* Fixed: Always the same length. And you can set code length.
+* Variable: According to the target number, code length is variable.
+
+`"jumpy.codeChars"`: Characters used to generate code
+
+`"jumpy.fixedCodeLength"`: [Fixed mode only] Fixed code length, need to greater than 1 
+
 ## Support
 
 [Create an issue](https://github.com/wmaurer/vscode-jumpy/issues)

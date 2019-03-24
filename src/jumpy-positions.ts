@@ -1,7 +1,6 @@
 export interface JumpyPosition {
     line: number;
     character: number;
-    charOffset: number;
 }
 
 export interface JumpyFn {
@@ -14,16 +13,14 @@ export function jumpyWord(
     lines: string[],
     regexp: RegExp,
 ): JumpyPosition[] {
-    let positionIndex = 0;
     const positions: JumpyPosition[] = [];
-    for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
+    for (let i = 0; i < lines.length && isValidIndex(positions.length, maxDecorations); i++) {
         let lineText = lines[i];
         let word: RegExpExecArray;
-        while (!!(word = regexp.exec(lineText)) && positionIndex < maxDecorations) {
+        while (!!(word = regexp.exec(lineText)) && isValidIndex(positions.length, maxDecorations)) {
             positions.push({
                 line: i + firstLineNumber,
                 character: word.index,
-                charOffset: 2,
             });
         }
     }
@@ -36,16 +33,19 @@ export function jumpyLine(
     lines: string[],
     regexp: RegExp,
 ): JumpyPosition[] {
-    let positionIndex = 0;
     const positions: JumpyPosition[] = [];
-    for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
+    for (let i = 0; i < lines.length && isValidIndex(positions.length, maxDecorations); i++) {
         if (!lines[i].match(regexp)) {
             positions.push({
                 line: i + firstLineNumber,
                 character: 0,
-                charOffset: lines[i].length == 1 ? 1 : 2,
             });
         }
     }
     return positions;
 }
+
+function isValidIndex(index: number, max: number): boolean {
+    if (max < 0) return true;
+    return (index < max);
+};
