@@ -1,39 +1,51 @@
-import { commands, Selection, TextEditorRevealType, window } from 'vscode';
-import { isInJumpMode, setJumpMode } from './ext_context';
-import { getLines, JumpCallbck, JumpPositionMap } from './ext_nav';
-import { createTextEditorDecorationType } from './ext_settings';
+import { commands, Selection, TextEditorRevealType, window, TextEditor, TextLine } from 'vscode';
+import { JumpCallback } from './ext_position';
+import { ExtState } from './ext_state';
 
-const DECORATION = createTextEditorDecorationType();
+export function exitJumpMode(state: ExtState) {
+    state.disableJumpMode();
 
-let POSITIONS: JumpPositionMap = {};
-let FIRST_CHAR = '';
-
-export function exitJumpMode() {
     const editor = window.activeTextEditor;
-    setJumpMode(false);
-    FIRST_CHAR = '';
     if (editor) {
-        editor.setDecorations(DECORATION, []);
+        editor.setDecorations(state.settings.decorationType, []);
     }
 }
 
-export function startJumpMode(callback: JumpCallbck, regex: RegExp): void {
+function getLines(editor: TextEditor): [number, TextLine[]] {
+    const lines: TextLine[] = [];
+
+    const document = editor.document;
+    const ranges = editor.visibleRanges;
+    const firstLineNumber = ranges[0] ? ranges[0].start.line : 0;
+
+    for (const range of ranges) {
+        let lineNumber = range.start.line;
+        while (lineNumber <= range.end.line) {
+            lines.push(document.lineAt(lineNumber));
+            lineNumber += 1;
+        }
+    }
+
+    return [firstLineNumber, lines];
+}
+
+export function startJumpMode(state: ExtState, callback: JumpCallback, regex: RegExp): void {
     const editor = window.activeTextEditor;
     if (editor === undefined) {
         return;
     }
 
-    setJumpMode(true);
+    state.enableJumpMode();
 
     const [firstLineNumber, visibleTextLines] = getLines(editor);
-    const [positions, decorations] = callback(firstLineNumber, visibleTextLines, regex);
+    const [positions, decorationOptions] = callback(state, firstLineNumber, visibleTextLines, regex);
 
-    editor.setDecorations(DECORATION, decorations);
-    POSITIONS = positions;
+    editor.setDecorations(state.settings.decorationType, decorationOptions);
+    state.positions = positions;
 }
 
-export function handleType(input: { text: string }): void {
-    if (!isInJumpMode()) {
+export function handleType(state: ExtState, input: { text: string }): void {
+    if (!state.isInJumpMode) {
         commands.executeCommand('default:type', input);
         return;
     }
@@ -45,18 +57,20 @@ export function handleType(input: { text: string }): void {
 
     const text = input.text;
     if (text.search(/[a-z]/i) === -1) {
-        return exitJumpMode();
-    }
-
-    if (FIRST_CHAR === '') {
-        FIRST_CHAR = text;
+        exitJumpMode(state);
         return;
     }
 
-    const code = FIRST_CHAR + text.toLowerCase();
-    const position = POSITIONS[code];
+    if (state.firstChar === '') {
+        state.firstChar = text.toLowerCase();
+        return;
+    }
+
+    const code = state.firstChar + text.toLowerCase();
+    const position = state.positions[code];
     if (!position) {
-        return exitJumpMode();
+        exitJumpMode(state);
+        return;
     }
 
     editor.selection = new Selection(
@@ -68,5 +82,5 @@ export function handleType(input: { text: string }): void {
 
     const reviewType: TextEditorRevealType = TextEditorRevealType.Default;
     editor.revealRange(editor.selection, reviewType);
-    exitJumpMode();
+    exitJumpMode(state);
 }

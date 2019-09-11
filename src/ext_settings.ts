@@ -1,6 +1,6 @@
-import { DecorationOptions, Range, TextEditorDecorationType, window, workspace } from 'vscode';
+import { workspace, ThemeColor, TextEditorDecorationType, window } from 'vscode';
 
-const enum Settings {
+export const enum Settings {
     EditorNamespace = 'editor',
     ExtNamespace = 'jumpy',
     WordRegexp = 'wordRegexp',
@@ -11,13 +11,16 @@ const enum Settings {
     DarkThemeForeground = 'darkThemeForeground',
     LightThemeBackground = 'lightThemeBackground',
     LightThemeForeground = 'lightThemeForeground',
+    ColorTheme = 'colorTheme',
 }
 
-interface DecorStyle {
+interface DecorationConfig {
     fontSize: number;
     fontFamily: string;
-    color: string;
-    backgroundColor: string;
+    color: string | ThemeColor;
+    margin: string;
+    width: string;
+    backgroundColor: string | ThemeColor;
     light: {
         color: string;
         backgroundColor: string;
@@ -25,83 +28,52 @@ interface DecorStyle {
 }
 
 const REGEX_WORD = /\w{2,}/g;
-let USER_REGEX_WORD_TEXT = '';
-let USER_REGEX_WORD_INST = REGEX_WORD;
-
 const REGEX_LINE = /^\s*$/g;
-let USER_REGEX_LINE_TEXT = '';
-let USER_REGEX_LINE_INST = REGEX_LINE;
 
-export const getWordRegex = (): RegExp => {
-    const extensionConfig = workspace.getConfiguration(Settings.ExtNamespace);
-    const wordRegexpSetting = extensionConfig && extensionConfig[Settings.WordRegexp];
-    if (!wordRegexpSetting) {
-        return REGEX_WORD;
-    }
-    if (wordRegexpSetting === USER_REGEX_WORD_TEXT) {
-        return USER_REGEX_WORD_INST;
+export class ExtSettings {
+    public decorationConfig: DecorationConfig = {} as unknown as DecorationConfig;
+    public decorationType: TextEditorDecorationType = {} as unknown as TextEditorDecorationType;
+    public wordRegexp: RegExp = REGEX_WORD;
+    public lineRegexp: RegExp = REGEX_LINE;
+
+    constructor () {
+        this.refreshConfig();
     }
 
-    USER_REGEX_WORD_TEXT = wordRegexpSetting;
-    return (USER_REGEX_WORD_INST = new RegExp(wordRegexpSetting, 'g'));
-};
+    public refreshConfig () {
+        const extensionConfig = workspace.getConfiguration(Settings.ExtNamespace);
+        const editorConfig =  workspace.getConfiguration(Settings.EditorNamespace);
 
-export const getLineRegex = (): RegExp => {
-    const extensionConfig = workspace.getConfiguration(Settings.ExtNamespace);
-    const lineRegexpSetting = extensionConfig && extensionConfig[Settings.LineRegexp];
-    if (!lineRegexpSetting) {
-        return REGEX_LINE;
-    }
-    if (lineRegexpSetting === USER_REGEX_LINE_TEXT) {
-        return USER_REGEX_LINE_INST;
-    }
-    USER_REGEX_LINE_TEXT = lineRegexpSetting;
-    return (USER_REGEX_LINE_INST = new RegExp(lineRegexpSetting, 'g'));
-};
+        const fontFamily = extensionConfig[Settings.FontFamily] || editorConfig[Settings.FontFamily];
+        const fontSize = extensionConfig[Settings.FontSize] || editorConfig[Settings.FontSize];
+        const fgDark = extensionConfig[Settings.DarkThemeForeground] || new ThemeColor(editorConfig[Settings.ColorTheme]);
+        const bgDark = extensionConfig[Settings.DarkThemeBackground] || new ThemeColor(editorConfig[Settings.ColorTheme]);
+        const fgLight = extensionConfig[Settings.LightThemeForeground];
+        const bgLight = extensionConfig[Settings.LightThemeBackground];
 
-function initializeConfiguration(): DecorStyle {
-    const extensionConfig = workspace.getConfiguration(Settings.ExtNamespace);
-    const editorConfig = workspace.getConfiguration(Settings.EditorNamespace);
+        const margin = fontSize * 0.2;
 
-    const fontFamily = extensionConfig[Settings.FontFamily] || editorConfig[Settings.FontFamily];
-    const fontSize = extensionConfig[Settings.FontSize] || editorConfig[Settings.FontSize];
-
-    return {
-        fontFamily,
-        fontSize,
-        color: extensionConfig[Settings.DarkThemeForeground],
-        backgroundColor: extensionConfig[Settings.DarkThemeBackground],
-        light: {
-            color: extensionConfig[Settings.LightThemeForeground],
-            backgroundColor: extensionConfig[Settings.LightThemeBackground],
-        },
-    };
-}
-
-export function createTextEditorDecorationType(): TextEditorDecorationType {
-    return window.createTextEditorDecorationType({
-        after: initializeConfiguration(),
-    });
-}
-
-export function createDecorationOptions(
-    line: number,
-    startCharacter: number,
-    code: string,
-): DecorationOptions {
-    return {
-        range: new Range(line, startCharacter, line, startCharacter),
-        renderOptions: {
-            dark: {
-                after: {
-                    contentText: code,
-                },
-            },
+        this.decorationConfig = {
+            fontSize,
+            fontFamily,
+            color: fgDark,
+            backgroundColor: bgDark,
+            margin: `0 0 0 -${fontSize + margin}px`,
+            width: `${fontSize + margin}px`,
             light: {
-                after: {
-                    contentText: code,
-                },
+                color: fgLight,
+                backgroundColor: bgLight,
             },
-        },
-    };
+        };
+
+        this.decorationType = window.createTextEditorDecorationType({
+            after: this.decorationConfig,
+        });
+
+        const wordRegexp = extensionConfig[Settings.WordRegexp];
+        const lineRegexp = extensionConfig[Settings.LineRegexp];
+
+        this.wordRegexp = wordRegexp ? new RegExp(wordRegexp, 'g') : REGEX_WORD;
+        this.lineRegexp = lineRegexp ? new RegExp(lineRegexp, 'g') : REGEX_LINE;
+    }
 }

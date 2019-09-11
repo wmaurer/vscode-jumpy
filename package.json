@@ -37,20 +37,7 @@
     ],
     "main": "./out/extension",
     "contributes": {
-        "commands": [
-            {
-                "command": "extension.jumpy-word",
-                "title": "Jumpy Word Mode"
-            },
-            {
-                "command": "extension.jumpy-line",
-                "title": "Jumpy Line Mode"
-            },
-            {
-                "command": "extension.jumpy-exit",
-                "title": "Exit Jumpy Mode"
-            }
-        ],
+        "commands": [],
         "keybindings": [
             {
                 "key": "shift+enter",
@@ -89,22 +76,22 @@
                 },
                 "jumpy.darkThemeBackground": {
                     "type": "string",
-                    "default": "white",
+                    "default": "",
                     "description": "Background of Jumpy decoration in dark themes"
                 },
                 "jumpy.darkThemeForeground": {
                     "type": "string",
-                    "default": "black",
+                    "default": "",
                     "description": "Text color of Jumpy decoration in dark themes"
                 },
                 "jumpy.lightThemeBackground": {
                     "type": "string",
-                    "default": "yellow",
+                    "default": "",
                     "description": "Background of Jumpy decoration in light themes"
                 },
                 "jumpy.lightThemeForeground": {
                     "type": "string",
-                    "default": "black",
+                    "default": "",
                     "description": "Text color of Jumpy decoration in light themes"
                 }
             }
