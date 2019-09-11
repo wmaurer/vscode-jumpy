@@ -24,18 +24,18 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/wmaurer/vscode-jumpy.git"
+        "url": "https://github.com/krnik/vscode-jumpy.git"
     },
     "bugs": {
-        "url": "https://github.com/wmaurer/vscode-jumpy/issues"
+        "url": "https://github.com/krnik/vscode-jumpy/issues"
     },
-    "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
+    "homepage": "https://github.com/krnik/vscode-jumpy/blob/master/README.md",
     "activationEvents": [
         "onCommand:extension.jumpy-word",
         "onCommand:extension.jumpy-line",
         "onCommand:extension.jumpy-exit"
     ],
-    "main": "./out/src/extension",
+    "main": "./out/extension",
     "contributes": {
         "commands": [
             {
@@ -51,18 +51,30 @@
                 "title": "Exit Jumpy Mode"
             }
         ],
+        "keybindings": [
+            {
+                "key": "shift+enter",
+                "command": "extension.jumpy-exit",
+                "when": "editorTextFocus && jumpy.isJumpyMode"
+            },
+            {
+                "key": "shift+enter",
+                "command": "extension.jumpy-word",
+                "when": "editorTextFocus && !jumpy.isJumpyMode"
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "Jumpy Configuration",
             "properties": {
                 "jumpy.wordRegexp": {
                     "type": "string",
-                    "default": "\\w{2,}",
+                    "default": "",
                     "description": "The Regexp to use to match words in Jumpy Word Mode"
                 },
                 "jumpy.lineRegexp": {
                     "type": "string",
-                    "default": "^\\s*$",
+                    "default": "",
                     "description": "The Regexp to use to match empty lines in Jumpy Line Mode"
                 },
                 "jumpy.fontFamily": {
@@ -87,12 +99,12 @@
                 },
                 "jumpy.lightThemeBackground": {
                     "type": "string",
-                    "default": "black",
+                    "default": "yellow",
                     "description": "Background of Jumpy decoration in light themes"
                 },
                 "jumpy.lightThemeForeground": {
                     "type": "string",
-                    "default": "white",
+                    "default": "black",
                     "description": "Text color of Jumpy decoration in light themes"
                 }
             }
@@ -100,19 +112,23 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
+        "compile": "tsc ",
+        "watch": "tsc --watch",
         "test": "npm run compile && node ./node_modules/vscode/bin/test",
-        "format": "prettier ./**/*.{ts,json} --write"
+        "format": "eslint --fix ./src/**/*"
     },
     "devDependencies": {
-        "@types/mocha": "^2.2.32",
-        "@types/node": "^6.0.45",
-        "mocha": "^5.2.0",
-        "prettier": "^1.13.5",
-        "tslint": "^3.15.1",
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6"
+        "@types/mocha": "5.2.7",
+        "@types/node": "12.7.4",
+        "@types/vscode": "1.14.0",
+        "@typescript-eslint/eslint-plugin": "2.2.0",
+        "@typescript-eslint/parser": "2.2.0",
+        "eslint": "6.3.0",
+        "eslint-config-prettier": "6.3.0",
+        "eslint-plugin-prettier": "3.1.0",
+        "mocha": "6.2.0",
+        "prettier": "1.18.2",
+        "typescript": "3.6.2",
+        "vscode-test": "1.2.0"
     }
 }
