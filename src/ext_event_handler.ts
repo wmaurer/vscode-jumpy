@@ -38,7 +38,12 @@ export function startJumpMode(state: ExtState, callback: JumpCallback, regex: Re
     state.enableJumpMode();
 
     const [firstLineNumber, visibleTextLines] = getLines(editor);
-    const [positions, decorationOptions] = callback(state, firstLineNumber, visibleTextLines, regex);
+    const [positions, decorationOptions] = callback(
+        state,
+        firstLineNumber,
+        visibleTextLines,
+        regex,
+    );
 
     editor.setDecorations(state.settings.decorationType, decorationOptions);
     state.positions = positions;

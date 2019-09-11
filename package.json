@@ -4,8 +4,8 @@
     "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
     "icon": "images/jumpy-icon.png",
     "license": "MIT",
-    "version": "0.3.1",
-    "publisher": "wmaurer",
+    "version": "0.3.3",
+    "publisher": "krnik",
     "engines": {
         "vscode": "^1.24.0"
     },
@@ -76,12 +76,12 @@
                 },
                 "jumpy.darkThemeBackground": {
                     "type": "string",
-                    "default": "",
+                    "default": "#004455",
                     "description": "Background of Jumpy decoration in dark themes"
                 },
                 "jumpy.darkThemeForeground": {
                     "type": "string",
-                    "default": "",
+                    "default": "#0af0c1",
                     "description": "Text color of Jumpy decoration in dark themes"
                 },
                 "jumpy.lightThemeBackground": {

@@ -12,13 +12,13 @@ enum Command {
     Type = 'type',
 }
 
-export function activate(context: ExtensionContext) {
+export function activate(context: ExtensionContext): void {
     const state = new ExtState().disableJumpMode();
 
-    const runWordHandler = () => startJumpMode(state, jumpWord, state.settings.wordRegexp);
-    const runLineHandler = () => startJumpMode(state, jumpLine, state.settings.lineRegexp);
-    const exitHandler = () => exitJumpMode(state);
-    const typeHandler = (input: { text: string }) => handleType(state, input);
+    const runWordHandler = (): void => startJumpMode(state, jumpWord, state.settings.wordRegexp);
+    const runLineHandler = (): void => startJumpMode(state, jumpLine, state.settings.lineRegexp);
+    const exitHandler = (): void => exitJumpMode(state);
+    const typeHandler = (input: { text: string }): void => handleType(state, input);
 
     context.subscriptions.push(
         commands.registerCommand(Command.Word, runWordHandler),
@@ -27,12 +27,16 @@ export function activate(context: ExtensionContext) {
         commands.registerCommand(Command.Type, typeHandler),
         window.onDidChangeActiveTextEditor(exitHandler),
         workspace.onDidChangeConfiguration((event) => {
-            if (event.affectsConfiguration(Settings.ExtNamespace)
-                || event.affectsConfiguration(Settings.EditorNamespace)) {
+            if (
+                event.affectsConfiguration(Settings.ExtNamespace) ||
+                event.affectsConfiguration(Settings.EditorNamespace)
+            ) {
                 state.settings.refreshConfig();
+                state.rebuildCache();
             }
         }),
     );
 }
 
+// tsling-disable
 export function deactivate() {}

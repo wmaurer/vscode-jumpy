@@ -1,6 +1,10 @@
-import { commands } from 'vscode';
+import { commands, Uri } from 'vscode';
 import { JumpPositionMap } from './ext_position';
 import { ExtSettings } from './ext_settings';
+
+interface UriCache {
+    [k: string]: Uri;
+}
 
 export class ExtState {
     public codes: string[];
@@ -9,14 +13,16 @@ export class ExtState {
     public positions: JumpPositionMap;
     public firstChar: string;
     public isInJumpMode: boolean;
+    public uriCache: UriCache;
 
-    constructor () {
+    constructor() {
         this.codes = this.buildCodes();
         this.maxDecorations = this.codes.length;
         this.settings = new ExtSettings();
         this.positions = {};
         this.firstChar = '';
         this.isInJumpMode = false;
+        this.uriCache = this.buildCache();
     }
 
     public disableJumpMode(): this {
@@ -34,6 +40,13 @@ export class ExtState {
 
     private buildCodes(): string[] {
         const codes: string[] = [];
+        function combine(arrA: string[], arrB: string[]): void {
+            for (let i = 0; i < arrA.length; i++) {
+                for (let j = i; j < arrB.length; j++) {
+                    codes.push(`${arrA[i]}${arrB[j]}`);
+                }
+            }
+        }
 
         const sets = [
             ['q', 'w', 'e', 'a', 's', 'd', 'z', 'x', 'c'],
@@ -49,13 +62,29 @@ export class ExtState {
         combine(sets[1], sets[2]);
 
         return codes;
+    }
 
-        function combine (arrA: string[], arrB: string[]) {
-            for (let i = 0; i < arrA.length; i++) {
-                for (let j = i; j < arrB.length; j++) {
-                    codes.push(`${arrA[i]}${arrB[j]}`);
-                }
-            }
+    public rebuildCache(): void {
+        this.uriCache = this.buildCache();
+    }
+
+    private buildCache(): UriCache {
+        const cache: UriCache = {};
+        const {
+            fontSize,
+            fontFamily,
+            backgroundColor,
+            color,
+            pad,
+        } = this.settings.decorationConfig;
+        const width = fontSize + pad;
+
+        for (const code of this.codes) {
+            const svg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${fontSize}" height="${fontSize}" width="${width}"><rect width="${width}" height="${fontSize}" rx="2" ry="2" style="fill: ${backgroundColor};"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width}" lengthAdjust="spacing" fill="${color}" x="0" y="${fontSize -
+                pad}">${code}</text></svg>`;
+            cache[code] = Uri.parse(svg);
         }
+
+        return cache;
     }
 }

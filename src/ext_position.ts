@@ -17,6 +17,28 @@ export type JumpCallback = (
     regex: RegExp,
 ) => [JumpPositionMap, DecorationOptions[]];
 
+export function createDecorationOptions(
+    line: number,
+    startCharacter: number,
+    code: string,
+): DecorationOptions {
+    return {
+        range: new Range(line, startCharacter, line, startCharacter),
+        renderOptions: {
+            dark: {
+                after: {
+                    contentText: code,
+                },
+            },
+            light: {
+                after: {
+                    contentText: code,
+                },
+            },
+        },
+    };
+}
+
 export function jumpWord(
     state: ExtState,
     firstLineNumber: number,
@@ -33,9 +55,15 @@ export function jumpWord(
         let regexRes = regex.exec(text);
         while (regexRes != null && posCount < state.maxDecorations) {
             const code = state.codes[posCount];
+
+            if (regexRes.index < 4) {
+                regexRes = regex.exec(text);
+                continue;
+            }
+
             const position = {
                 line: i + firstLineNumber,
-                character: regexRes.index < 1 ? 2 : regexRes.index,
+                character: regexRes.index,
             };
 
             positions[code] = position;
@@ -44,6 +72,7 @@ export function jumpWord(
             );
 
             posCount += 1;
+
             regexRes = regex.exec(text);
         }
     }
@@ -78,26 +107,4 @@ export function jumpLine(
     }
 
     return [positions, decorationOptions];
-}
-
-export function createDecorationOptions(
-    line: number,
-    startCharacter: number,
-    code: string,
-): DecorationOptions {
-    return {
-        range: new Range(line, startCharacter, line, startCharacter),
-        renderOptions: {
-            dark: {
-                after: {
-                    contentText: code,
-                },
-            },
-            light: {
-                after: {
-                    contentText: code,
-                },
-            },
-        },
-    };
 }
