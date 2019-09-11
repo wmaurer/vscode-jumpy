@@ -1,10 +1,6 @@
-import { commands, Uri } from 'vscode';
+import { commands } from 'vscode';
 import { JumpPositionMap } from './ext_position';
 import { ExtSettings } from './ext_settings';
-
-interface UriCache {
-    [k: string]: Uri;
-}
 
 export class ExtState {
     public codes: string[];
@@ -13,7 +9,6 @@ export class ExtState {
     public positions: JumpPositionMap;
     public firstChar: string;
     public isInJumpMode: boolean;
-    public uriCache: UriCache;
 
     constructor() {
         this.codes = this.buildCodes();
@@ -22,7 +17,6 @@ export class ExtState {
         this.positions = {};
         this.firstChar = '';
         this.isInJumpMode = false;
-        this.uriCache = this.buildCache();
     }
 
     public disableJumpMode(): this {
@@ -62,29 +56,5 @@ export class ExtState {
         combine(sets[1], sets[2]);
 
         return codes;
-    }
-
-    public rebuildCache(): void {
-        this.uriCache = this.buildCache();
-    }
-
-    private buildCache(): UriCache {
-        const cache: UriCache = {};
-        const {
-            fontSize,
-            fontFamily,
-            backgroundColor,
-            color,
-            pad,
-        } = this.settings.decorationConfig;
-        const width = fontSize + pad;
-
-        for (const code of this.codes) {
-            const svg = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${fontSize}" height="${fontSize}" width="${width}"><rect width="${width}" height="${fontSize}" rx="2" ry="2" style="fill: ${backgroundColor};"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width}" lengthAdjust="spacing" fill="${color}" x="0" y="${fontSize -
-                pad}">${code}</text></svg>`;
-            cache[code] = Uri.parse(svg);
-        }
-
-        return cache;
     }
 }

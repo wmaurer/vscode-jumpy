@@ -32,7 +32,6 @@ export function activate(context: ExtensionContext): void {
                 event.affectsConfiguration(Settings.EditorNamespace)
             ) {
                 state.settings.refreshConfig();
-                state.rebuildCache();
             }
         }),
     );
