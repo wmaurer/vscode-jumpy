@@ -62,7 +62,7 @@ export class ExtSettings {
             fontFamily,
             color: fgDark,
             backgroundColor: bgDark,
-            margin: `0 0 0 -${fontSize + pad}px`,
+            // margin: `0 -${fontSize + pad} 0 -${fontSize + pad}`,
             width: `${fontSize + pad}px`,
             light: {
                 color: fgLight,
