@@ -1,8 +1,7 @@
-import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, Selection, TextEditor, TextEditorSelectionChangeEvent, window, workspace, TextEditorVisibleRangesChangeEvent } from 'vscode';
+import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace } from 'vscode';
 import { getVisibleLines } from './get_lines';
-import { SettingNamespace, Settings } from './settings';
+import { Settings } from './settings';
 import { ExtensionComponent, Nullable } from './typings';
-import { CallDeferred } from './deferred';
 
 // TODO: Measure performance of every bigger code chunks
 
@@ -61,7 +60,6 @@ export class Jumpy implements ExtensionComponent {
     private settings: Settings;
     private positions: JumpPositionMap;
     private state: State;
-    private redraw: CallDeferred;
 
     public constructor() {
         this.state = { isInJumpMode: false, editor: undefined, visibleRangesNotYetUpdated: false };
@@ -76,7 +74,6 @@ export class Jumpy implements ExtensionComponent {
         };
         this.settings = new Settings();
         this.positions = {};
-        this.redraw = new CallDeferred();
     }
 
     public activate(): void {
@@ -175,7 +172,7 @@ export class Jumpy implements ExtensionComponent {
         this.setJumpyContext(false);
     };
 
-    private handleTypeEvent = (type: any): void => {
+    private handleTypeEvent = (_type: any): void => {
         // do sth
     };
 

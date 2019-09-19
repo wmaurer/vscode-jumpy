@@ -28,7 +28,7 @@ interface DecorationOptions {
     fontFamily?: string;
     fontSize?: number;
     color?: string;
-    background?: string;
+    backgroundColor?: string;
     width?: string;
 }
 
@@ -123,6 +123,7 @@ export class Settings implements ExtensionComponent  {
             width: `${fontSize}px`,
             margin: `0 0 1px 0`,
         };
+        console.log(options.color, options.backgroundColor);
 
         this.decorationOptions = options;
         this.decorationType = window.createTextEditorDecorationType({ after: options });
@@ -173,11 +174,14 @@ export class Settings implements ExtensionComponent  {
     }
 
     private createSVGIconUri (code: string): Uri {
-        const { fontSize, background, fontFamily, color } = this.decorationOptions;
-        const svg = `<svg viewBox="0 0 ${fontSize} ${fontSize}" height="${fontSize}" width="${fontSize}">
-            <rect width="" height="" rx="2" ry="2" style="fill: ${background};"></rect>
-            <text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${fontSize}" textAdjust="spacing" fill="${color}" x="1" y="${fontSize}">${code}</text>
-        </svg>`;
-        return Uri.parse(`data:image/svg+xml;utf8,${svg}`);
+        const { fontSize, backgroundColor, fontFamily, color } = this.decorationOptions;
+        const svgTags = [
+            `<svg viewBox="0 0 ${fontSize} ${fontSize}" height="${fontSize}" width="${fontSize}">`,
+            `<rect width="" height="" rx="2" ry="2" style="fill: ${backgroundColor};"></rect>`,
+            `<text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${fontSize}" textAdjust="spacing" fill="${color}" x="1" y="0">${code}</text>`,
+            `</svg>`,
+        ];
+        console.log(svgTags[2]);
+        return Uri.parse(`data:image/svg+xml;utf8,${svgTags.join('')}`);
     }
 }
