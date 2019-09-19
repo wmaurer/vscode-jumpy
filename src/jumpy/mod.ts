@@ -216,7 +216,7 @@ export class Jumpy implements ExtensionComponent {
                 const code = this.settings.codes[positionCount];
                 const position = {
                     line: lines[i].lineNumber,
-                    char: regexpResult.index,
+                    char: regexpResult.index + this.settings.charOffset,
                 };
 
                 this.positions[code] = position;

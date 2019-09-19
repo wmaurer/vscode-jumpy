@@ -25,11 +25,11 @@ const enum DisplaySetting {
 }
 
 interface DecorationOptions {
-    fontFamily?: string;
-    fontSize?: number;
-    color?: string;
-    backgroundColor?: string;
-    width?: string;
+    fontFamily: string;
+    fontSize: number;
+    color: string;
+    backgroundColor: string;
+    width: string;
 }
 
 // Default values
@@ -42,13 +42,15 @@ export class Settings implements ExtensionComponent  {
     public codes: string[];
     public decorationType: TextEditorDecorationType;
     public wordRegexp: RegExp;
+    public charOffset: number;
 
     public constructor () {
-        this.decorationOptions = {};
+        this.decorationOptions = {} as unknown as DecorationOptions;
         this.decorationType = window.createTextEditorDecorationType({});
         this.codeOptions = new Map();
         this.codes = [];
         this.wordRegexp = DEFAULT_JUMP_REGEXP;
+        this.charOffset = 0;
     }
 
     public activate(): void {
@@ -74,6 +76,7 @@ export class Settings implements ExtensionComponent  {
             return true;
         } else if (event.affectsConfiguration(SettingNamespace.Editor)) {
             this.buildDecorationType();
+            this.buildCodeOptions();
             return true;
         } else {
             return false;
@@ -83,6 +86,9 @@ export class Settings implements ExtensionComponent  {
     private buildDecorationType(): void {
         const jumpyConfig = workspace.getConfiguration(SettingNamespace.Jumpy);
         const editorConfig = workspace.getConfiguration(SettingNamespace.Editor);
+        const useIcons = Boolean(jumpyConfig.get<boolean>(Setting.UseIcons));
+
+        this.charOffset = useIcons ? 2 : 0;
 
         const fontFamily: string =
             jumpyConfig[DisplaySetting.FontFamily] || editorConfig['fontFamily'];
@@ -115,18 +121,29 @@ export class Settings implements ExtensionComponent  {
         // const colorLight = jumpyConfig[Setting.ColorLight];
         // const backgroundLight = jumpyConfig[Setting.BackgroundLight];
 
+        const width = fontSize + 2;
+
         const options = {
             fontSize,
             fontFamily,
             color,
             backgroundColor,
-            width: `${fontSize}px`,
-            margin: `0 0 1px 0`,
+            width,
+            height: fontSize,
         };
-        console.log(options.color, options.backgroundColor);
+
+        const decorationTypeOptions: DecorationOptions = useIcons
+            ? {
+                width: `${width}px`,
+                height: `${fontSize}px`,
+                margin: `0 0 0 -${width}px`,
+            }
+            : options;
+
+        console.log(options.fontSize, options.color, options.backgroundColor);
 
         this.decorationOptions = options;
-        this.decorationType = window.createTextEditorDecorationType({ after: options });
+        this.decorationType = window.createTextEditorDecorationType({ after: decorationTypeOptions });
     }
 
     private buildWordRegexp(): void {
@@ -149,15 +166,16 @@ export class Settings implements ExtensionComponent  {
     private buildCodeOptions(): void {
         const settings = workspace.getConfiguration(SettingNamespace.Jumpy);
         const useIcons = Boolean(settings.get<boolean>(Setting.UseIcons));
+        const [codePrefix, codeSuffix] = useIcons ? this.createCodeAffixes() : ['', ''];
 
         for (const code of this.codes) {
-            this.codeOptions.set(code, this.createRenderOptions(useIcons, code));
+            this.codeOptions.set(code, this.createRenderOptions(useIcons, `${codePrefix}${code}${codeSuffix}`));
         }
     }
 
-    private createRenderOptions(useIcons: boolean, code: string): DecorationInstanceRenderOptions {
+    private createRenderOptions(useIcons: boolean, optionValue: string): DecorationInstanceRenderOptions {
         const key = useIcons ? 'contentIconPath' : 'contentText';
-        const value = useIcons ? this.createSVGIconUri(code) : code;
+        const value = useIcons ? Uri.parse(optionValue) : optionValue;
 
         return {
             dark: {
@@ -173,15 +191,11 @@ export class Settings implements ExtensionComponent  {
         };
     }
 
-    private createSVGIconUri (code: string): Uri {
-        const { fontSize, backgroundColor, fontFamily, color } = this.decorationOptions;
-        const svgTags = [
-            `<svg viewBox="0 0 ${fontSize} ${fontSize}" height="${fontSize}" width="${fontSize}">`,
-            `<rect width="" height="" rx="2" ry="2" style="fill: ${backgroundColor};"></rect>`,
-            `<text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${fontSize}" textAdjust="spacing" fill="${color}" x="1" y="0">${code}</text>`,
-            `</svg>`,
+    private createCodeAffixes (): [string, string] {
+        const { fontSize, backgroundColor, fontFamily, color, width, height } = this.decorationOptions;
+        return [
+            `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" style="fill:${backgroundColor};"></rect><text font-family="Consolas, 'Courier New', monospace" font-size="${fontSize}px" textLength="${fontSize}" style="fill:${color};" x="1" y="${fontSize * 0.8}">`,
+            `</text></svg>`,
         ];
-        console.log(svgTags[2]);
-        return Uri.parse(`data:image/svg+xml;utf8,${svgTags.join('')}`);
     }
 }
