@@ -1,4 +1,4 @@
-import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace } from 'vscode';
+import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace, Selection, Position } from 'vscode';
 import { getVisibleLines } from './get_lines';
 import { Settings } from './settings';
 import { ExtensionComponent, Nullable } from './typings';
@@ -31,12 +31,14 @@ interface StateJumpActive {
     isInJumpMode: true;
     editor: TextEditor;
     visibleRangesNotYetUpdated: boolean;
+    typedCharacters: string;
 }
 
 interface StateJumpInactive {
     isInJumpMode: false;
     editor: undefined;
     visibleRangesNotYetUpdated: boolean;
+    typedCharacters: string;
 }
 
 type State = StateJumpActive | StateJumpInactive;
@@ -53,7 +55,9 @@ const DEFAULT_STATE: State = {
     isInJumpMode: false,
     editor: undefined,
     visibleRangesNotYetUpdated: false,
+    typedCharacters: '',
 };
+const TYPE_REGEX = /\w/;
 
 export class Jumpy implements ExtensionComponent {
     private handles: Record<Command | Event, Nullable<Disposable>>;
@@ -62,7 +66,7 @@ export class Jumpy implements ExtensionComponent {
     private state: State;
 
     public constructor() {
-        this.state = { isInJumpMode: false, editor: undefined, visibleRangesNotYetUpdated: false };
+        this.state = { isInJumpMode: false, editor: undefined, visibleRangesNotYetUpdated: false, typedCharacters: '' };
         this.handles = {
             [Command.Type]: null,
             [Command.Exit]: null,
@@ -166,14 +170,41 @@ export class Jumpy implements ExtensionComponent {
         }
 
         this.setDecorations(this.state.editor, NO_DECORATIONS);
-        this.state = DEFAULT_STATE;
+        this.state = Object.assign({}, DEFAULT_STATE);
 
         this.tryDispose(Command.Type);
         this.setJumpyContext(false);
     };
 
-    private handleTypeEvent = (_type: any): void => {
-        // do sth
+    private handleTypeEvent = (type: { text: string }): void => {
+        if (!TYPE_REGEX.test(type.text) || !this.state.isInJumpMode) {
+            // TODO: Either exit jumpy mode or display a note that the key is unsupported.
+            // TODO: TYPE_REGEX should be config sensitive.
+            this.state.typedCharacters = '';
+            return;
+        }
+
+        if (this.state.typedCharacters.length === 0) {
+            this.state.typedCharacters += type.text.toLowerCase();
+            return;
+        }
+
+        const code = this.state.typedCharacters + type.text.toLowerCase();
+        const position = this.positions[code];
+
+        if (position === undefined) {
+            // TODO: Notify on error.
+            return;
+        }
+
+        this.state.editor.selection = new Selection(
+            position.line,
+            position.char,
+            position.line,
+            position.char,
+        );
+
+        this.handleExitJumpMode();
     };
 
     private setJumpyContext (value: boolean): void {
@@ -216,12 +247,15 @@ export class Jumpy implements ExtensionComponent {
                 const code = this.settings.codes[positionCount];
                 const position = {
                     line: lines[i].lineNumber,
-                    char: regexpResult.index + this.settings.charOffset,
+                    char: regexpResult.index,
                 };
+
+                const line = position.line;
+                const char = position.char  + this.settings.charOffset;
 
                 this.positions[code] = position;
                 decorationOptions.push({
-                    range: new Range(position.line, position.char, position.line, position.char),
+                    range: new Range(line, char, line, char),
                     renderOptions: this.settings.getOptions(code)
                 });
 

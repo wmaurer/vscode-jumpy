@@ -36,6 +36,8 @@ interface DecorationOptions {
 const DEFAULT_REGEX_FLAGS = 'gi';
 const DEFAULT_JUMP_REGEXP = /\w{2,}/g;
 
+const DATA_URI = Uri.parse('data:');
+
 export class Settings implements ExtensionComponent  {
     private decorationOptions: DecorationOptions;
     private codeOptions: Map<string, DecorationInstanceRenderOptions>;
@@ -121,9 +123,11 @@ export class Settings implements ExtensionComponent  {
         // const colorLight = jumpyConfig[Setting.ColorLight];
         // const backgroundLight = jumpyConfig[Setting.BackgroundLight];
 
-        const width = fontSize + 2;
+        const pad = 2 * Math.ceil(fontSize / (10 * 2));
+        const width = fontSize + pad;
 
         const options = {
+            pad,
             fontSize,
             fontFamily,
             color,
@@ -139,8 +143,6 @@ export class Settings implements ExtensionComponent  {
                 margin: `0 0 0 -${width}px`,
             }
             : options;
-
-        console.log(options.fontSize, options.color, options.backgroundColor);
 
         this.decorationOptions = options;
         this.decorationType = window.createTextEditorDecorationType({ after: decorationTypeOptions });
@@ -175,7 +177,7 @@ export class Settings implements ExtensionComponent  {
 
     private createRenderOptions(useIcons: boolean, optionValue: string): DecorationInstanceRenderOptions {
         const key = useIcons ? 'contentIconPath' : 'contentText';
-        const value = useIcons ? Uri.parse(optionValue) : optionValue;
+        const value = useIcons ? DATA_URI.with({ path: optionValue }) : optionValue;
 
         return {
             dark: {
@@ -192,9 +194,11 @@ export class Settings implements ExtensionComponent  {
     }
 
     private createCodeAffixes (): [string, string] {
-        const { fontSize, backgroundColor, fontFamily, color, width, height } = this.decorationOptions;
+        const { pad, fontSize, backgroundColor, fontFamily, color, width, height } = this.decorationOptions;
+        const halfOfPad = pad >> 1;
+
         return [
-            `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" style="fill:${backgroundColor};"></rect><text font-family="Consolas, 'Courier New', monospace" font-size="${fontSize}px" textLength="${fontSize}" style="fill:${color};" x="1" y="${fontSize * 0.8}">`,
+            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="Consolas, 'Courier New', monospace" font-size="${fontSize}px" textLength="${width - halfOfPad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
             `</text></svg>`,
         ];
     }
