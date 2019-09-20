@@ -4,10 +4,10 @@
     "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
     "icon": "images/jumpy-icon.png",
     "license": "MIT",
-    "version": "0.4.0",
+    "version": "1.0.0",
     "publisher": "krnik",
     "engines": {
-        "vscode": "^1.24.0"
+        "vscode": "^1.38.0"
     },
     "categories": [
         "Other"
@@ -67,7 +67,7 @@
                 "jumpy.wordRegexp": {
                     "type": "string",
                     "default": "\\w{2,}",
-                    "description": "The Regexp to use to match words in Jumpy Word Mode"
+                    "description": "The Regexp to use to match words in Jumpy Word Mode."
                 },
                 "jumpy.wordRegexpFlags": {
                     "type": "string",
@@ -77,12 +77,12 @@
                 "jumpy.display.backgroundColor": {
                     "type": "string",
                     "default": "#004455",
-                    "description": "Background of Jumpy decoration in dark themes"
+                    "description": "Background of Jumpy decoration."
                 },
                 "jumpy.display.color": {
                     "type": "string",
                     "default": "#0af0c1",
-                    "description": "Text color of Jumpy decoration in dark themes"
+                    "description": "Text color of Jumpy decoration."
                 }
             }
         }
