@@ -35,7 +35,9 @@ export function createCharCodeSet(primaryCharacters = DEFAULT_PRIMARY_CHARS): st
     const secondaryChars = ALL_ALLOWED_CHARS.filter((char) => !primaryChars.includes(char));
 
     const codeSet: string[] = [];
-    const callback = (str: string): void => { codeSet.push(str); };
+    const callback = (str: string): void => {
+        codeSet.push(str);
+    };
 
     combineElements(primaryChars, primaryChars, callback);
     combineElements(primaryChars, secondaryChars, callback);

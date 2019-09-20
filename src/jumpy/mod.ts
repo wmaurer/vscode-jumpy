@@ -1,4 +1,16 @@
-import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, Selection, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace } from 'vscode';
+import {
+    commands,
+    ConfigurationChangeEvent,
+    DecorationOptions,
+    Disposable,
+    Range,
+    Selection,
+    TextEditor,
+    TextEditorSelectionChangeEvent,
+    TextEditorVisibleRangesChangeEvent,
+    window,
+    workspace,
+} from 'vscode';
 import { getVisibleLines } from './get_lines';
 import { Settings } from './settings';
 import { ExtensionComponent, Nullable } from './typings';
@@ -41,8 +53,16 @@ interface StateJumpInactive {
 
 type State = StateJumpActive | StateJumpInactive;
 
-const HANDLE_NAMES = [Command.Type, Command.Exit, Command.Enter, Event.ConfigChanged, Event.ActiveEditorChanged, Event.ActiveSelectionChanged, Event.VisibleRangesChanged] as const;
-const NO_DECORATIONS: any[] = [];
+const HANDLE_NAMES = [
+    Command.Type,
+    Command.Exit,
+    Command.Enter,
+    Event.ConfigChanged,
+    Event.ActiveEditorChanged,
+    Event.ActiveSelectionChanged,
+    Event.VisibleRangesChanged,
+] as const;
+const NO_DECORATIONS: DecorationOptions[] = [];
 const DEFAULT_STATE: State = {
     isInJumpMode: false,
     editor: undefined,
@@ -58,7 +78,12 @@ export class Jumpy implements ExtensionComponent {
     private state: State;
 
     public constructor() {
-        this.state = { isInJumpMode: false, editor: undefined, visibleRangesNotYetUpdated: false, typedCharacters: '' };
+        this.state = {
+            isInJumpMode: false,
+            editor: undefined,
+            visibleRangesNotYetUpdated: false,
+            typedCharacters: '',
+        };
         this.handles = {
             [Command.Type]: null,
             [Command.Exit]: null,
@@ -75,12 +100,26 @@ export class Jumpy implements ExtensionComponent {
     public activate(): void {
         this.settings.activate();
 
-        this.handles[Command.Enter] = commands.registerCommand(Command.Enter, this.handleEnterJumpMode);
-        this.handles[Command.Exit] = commands.registerCommand(Command.Exit, this.handleExitJumpMode);
-        this.handles[Event.ConfigChanged] = workspace.onDidChangeConfiguration(this.handleConfigChange);
-        this.handles[Event.ActiveSelectionChanged] = window.onDidChangeTextEditorSelection(this.handleSelectionChange);
-        this.handles[Event.ActiveEditorChanged] = window.onDidChangeActiveTextEditor(this.handleEditorChange);
-        this.handles[Event.VisibleRangesChanged] = window.onDidChangeTextEditorVisibleRanges(this.handleVisibleRangesChange);
+        this.handles[Command.Enter] = commands.registerCommand(
+            Command.Enter,
+            this.handleEnterJumpMode,
+        );
+        this.handles[Command.Exit] = commands.registerCommand(
+            Command.Exit,
+            this.handleExitJumpMode,
+        );
+        this.handles[Event.ConfigChanged] = workspace.onDidChangeConfiguration(
+            this.handleConfigChange,
+        );
+        this.handles[Event.ActiveSelectionChanged] = window.onDidChangeTextEditorSelection(
+            this.handleSelectionChange,
+        );
+        this.handles[Event.ActiveEditorChanged] = window.onDidChangeActiveTextEditor(
+            this.handleEditorChange,
+        );
+        this.handles[Event.VisibleRangesChanged] = window.onDidChangeTextEditorVisibleRanges(
+            this.handleVisibleRangesChange,
+        );
     }
 
     public deactivate(): void {
@@ -133,7 +172,7 @@ export class Jumpy implements ExtensionComponent {
         }
     };
 
-    private tryDispose (handleName: Command | Event): void {
+    private tryDispose(handleName: Command | Event): void {
         const handle = this.handles[handleName];
         if (handle != null) {
             handle.dispose();
@@ -199,19 +238,21 @@ export class Jumpy implements ExtensionComponent {
         this.handleExitJumpMode();
     };
 
-    private setJumpyContext (value: boolean): void {
-
+    private setJumpyContext(value: boolean): void {
         commands.executeCommand('setContext', 'jumpy.isInJumpMode', value);
         this.state.isInJumpMode = value;
     }
 
-    private setDecorations (editor: TextEditor, decorationInstanceOptions: DecorationOptions[]): void {
+    private setDecorations(
+        editor: TextEditor,
+        decorationInstanceOptions: DecorationOptions[],
+    ): void {
         if (editor !== undefined) {
             editor.setDecorations(this.settings.decorationType, decorationInstanceOptions);
         }
     }
 
-    private showDecorations (editor: TextEditor): void {
+    private showDecorations(editor: TextEditor): void {
         const lines = getVisibleLines(editor);
 
         if (lines === null) {
@@ -242,12 +283,12 @@ export class Jumpy implements ExtensionComponent {
                 };
 
                 const line = position.line;
-                const char = position.char  + this.settings.charOffset;
+                const char = position.char + this.settings.charOffset;
 
                 this.positions[code] = position;
                 decorationOptions.push({
                     range: new Range(line, char, line, char),
-                    renderOptions: this.settings.getOptions(code)
+                    renderOptions: this.settings.getOptions(code),
                 });
 
                 positionCount += 1;

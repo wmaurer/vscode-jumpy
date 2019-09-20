@@ -17,6 +17,6 @@ export function activate(_context: ExtensionContext): void {
 }
 
 // tsling-disable
-export function deactivate() {
+export function deactivate(): void {
     jumpy.deactivate();
 }

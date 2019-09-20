@@ -1,4 +1,13 @@
-import { ConfigurationChangeEvent, DecorationInstanceRenderOptions, TextEditorDecorationType, ThemableDecorationAttachmentRenderOptions, ThemableDecorationRenderOptions, Uri, window, workspace } from 'vscode';
+import {
+    ConfigurationChangeEvent,
+    DecorationInstanceRenderOptions,
+    TextEditorDecorationType,
+    ThemableDecorationAttachmentRenderOptions,
+    ThemableDecorationRenderOptions,
+    Uri,
+    window,
+    workspace,
+} from 'vscode';
 import { createCharCodeSet } from './char_code';
 import { ExtensionComponent } from './typings';
 
@@ -42,7 +51,7 @@ const DATA_URI = Uri.parse('data:');
 const DEFAULT_COLOR = '#0af0c1';
 const DEFAULT_BACKGROUND_COLOR = '#004455';
 
-export class Settings implements ExtensionComponent  {
+export class Settings implements ExtensionComponent {
     private decorationOptions: DecorationOptions;
     private codeOptions: Map<string, DecorationInstanceRenderOptions>;
     public codes: string[];
@@ -50,8 +59,8 @@ export class Settings implements ExtensionComponent  {
     public wordRegexp: RegExp;
     public charOffset: number;
 
-    public constructor () {
-        this.decorationOptions = {} as unknown as DecorationOptions;
+    public constructor() {
+        this.decorationOptions = ({} as unknown) as DecorationOptions;
         this.decorationType = window.createTextEditorDecorationType({});
         this.codeOptions = new Map();
         this.codes = [];
@@ -63,20 +72,23 @@ export class Settings implements ExtensionComponent  {
         this.update();
     }
 
-    public deactivate(): void {}
+    public deactivate(): void {
+        this.codes = [];
+        this.codeOptions.clear();
+    }
 
     public getOptions(code: string): DecorationInstanceRenderOptions {
         return this.codeOptions.get(code) as DecorationInstanceRenderOptions;
     }
 
-    public update (): void {
+    public update(): void {
         this.buildDecorationType();
         this.buildWordRegexp();
         this.buildCharset();
         this.buildCodeOptions();
     }
 
-    public handleConfigurationChange (event: ConfigurationChangeEvent): boolean {
+    public handleConfigurationChange(event: ConfigurationChangeEvent): boolean {
         if (event.affectsConfiguration(SettingNamespace.Jumpy)) {
             this.update();
             return true;
@@ -87,7 +99,7 @@ export class Settings implements ExtensionComponent  {
         } else {
             return false;
         }
-    };
+    }
 
     private buildDecorationType(): void {
         const jumpyConfig = workspace.getConfiguration(SettingNamespace.Jumpy);
@@ -99,10 +111,11 @@ export class Settings implements ExtensionComponent  {
         const fontFamily = editorConfig.get(Setting.FontFamily) as string;
         const fontSize = editorConfig.get(Setting.FontSize) as number;
         const color = jumpyConfig.get<string>(DisplaySetting.Color) || DEFAULT_COLOR;
-        const backgroundColor = jumpyConfig.get<string>(DisplaySetting.BackgroundColor) || DEFAULT_BACKGROUND_COLOR;
+        const backgroundColor =
+            jumpyConfig.get<string>(DisplaySetting.BackgroundColor) || DEFAULT_BACKGROUND_COLOR;
 
         const pad = 2 * Math.ceil(fontSize / (10 * 2));
-        const width = fontSize + (pad * 2);
+        const width = fontSize + pad * 2;
 
         const options = {
             pad,
@@ -114,21 +127,25 @@ export class Settings implements ExtensionComponent  {
             height: fontSize,
         };
 
-        const decorationTypeOptions: ThemableDecorationAttachmentRenderOptions | ThemableDecorationRenderOptions = useIcons
+        const decorationTypeOptions:
+            | ThemableDecorationAttachmentRenderOptions
+            | ThemableDecorationRenderOptions = useIcons
             ? {
-                width: `${width}px`,
-                height: `${fontSize}px`,
-                margin: `0 0 0 -${width}px`,
-            }
+                  width: `${width}px`,
+                  height: `${fontSize}px`,
+                  margin: `0 0 0 -${width}px`,
+              }
             : {
-                width: `${width}px`,
-                height: `${fontSize}px`,
-                color,
-                backgroundColor,
-            };
+                  width: `${width}px`,
+                  height: `${fontSize}px`,
+                  color,
+                  backgroundColor,
+              };
 
         this.decorationOptions = options;
-        this.decorationType = window.createTextEditorDecorationType({ after: decorationTypeOptions });
+        this.decorationType = window.createTextEditorDecorationType({
+            after: decorationTypeOptions,
+        });
     }
 
     private buildWordRegexp(): void {
@@ -144,7 +161,10 @@ export class Settings implements ExtensionComponent  {
     private buildCharset(): void {
         const jumpyConfig = workspace.getConfiguration(SettingNamespace.Jumpy);
         const charsetSetting = jumpyConfig.get<string>(Setting.PrimaryCharset);
-        const charset = charsetSetting && charsetSetting.length ? charsetSetting.toLowerCase().split('') : undefined;
+        const charset =
+            charsetSetting && charsetSetting.length
+                ? charsetSetting.toLowerCase().split('')
+                : undefined;
         this.codes = createCharCodeSet(charset);
     }
 
@@ -154,11 +174,17 @@ export class Settings implements ExtensionComponent  {
         const [codePrefix, codeSuffix] = useIcons ? this.createCodeAffixes() : ['', ''];
 
         for (const code of this.codes) {
-            this.codeOptions.set(code, this.createRenderOptions(useIcons, `${codePrefix}${code}${codeSuffix}`));
+            this.codeOptions.set(
+                code,
+                this.createRenderOptions(useIcons, `${codePrefix}${code}${codeSuffix}`),
+            );
         }
     }
 
-    private createRenderOptions(useIcons: boolean, optionValue: string): DecorationInstanceRenderOptions {
+    private createRenderOptions(
+        useIcons: boolean,
+        optionValue: string,
+    ): DecorationInstanceRenderOptions {
         const key = useIcons ? 'contentIconPath' : 'contentText';
         const value = useIcons ? DATA_URI.with({ path: optionValue }) : optionValue;
 
@@ -176,12 +202,21 @@ export class Settings implements ExtensionComponent  {
         };
     }
 
-    private createCodeAffixes (): [string, string] {
-        const { pad, fontSize, backgroundColor, fontFamily, color, width, height } = this.decorationOptions;
+    private createCodeAffixes(): [string, string] {
+        const {
+            pad,
+            fontSize,
+            backgroundColor,
+            fontFamily,
+            color,
+            width,
+            height,
+        } = this.decorationOptions;
         const halfOfPad = pad >> 1;
 
         return [
-            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width - pad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
+            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width -
+                pad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
             `</text></svg>`,
         ];
     }
