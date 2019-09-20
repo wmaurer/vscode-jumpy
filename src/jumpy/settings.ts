@@ -39,6 +39,9 @@ const DEFAULT_JUMP_REGEXP = /\w{2,}/g;
 
 const DATA_URI = Uri.parse('data:');
 
+const DEFAULT_COLOR = '#0af0c1';
+const DEFAULT_BACKGROUND_COLOR = '#004455';
+
 export class Settings implements ExtensionComponent  {
     private decorationOptions: DecorationOptions;
     private codeOptions: Map<string, DecorationInstanceRenderOptions>;
@@ -88,18 +91,18 @@ export class Settings implements ExtensionComponent  {
 
     private buildDecorationType(): void {
         const jumpyConfig = workspace.getConfiguration(SettingNamespace.Jumpy);
-        const editorConfig = workspace.getConfiguration(SettingNamespace.Editor);
+        const editorConfig = workspace.getConfiguration(SettingNamespace.Editor, null);
         const useIcons = Boolean(jumpyConfig.get<boolean>(Setting.UseIcons));
 
         this.charOffset = useIcons ? 2 : 0;
 
         const fontFamily = editorConfig.get(Setting.FontFamily) as string;
         const fontSize = editorConfig.get(Setting.FontSize) as number;
-        const color = jumpyConfig.get(DisplaySetting.Color) as string;
-        const backgroundColor = jumpyConfig.get(DisplaySetting.BackgroundColor) as string;
+        const color = jumpyConfig.get<string>(DisplaySetting.Color) || DEFAULT_COLOR;
+        const backgroundColor = jumpyConfig.get<string>(DisplaySetting.BackgroundColor) || DEFAULT_BACKGROUND_COLOR;
 
         const pad = 2 * Math.ceil(fontSize / (10 * 2));
-        const width = fontSize + pad;
+        const width = fontSize + (pad * 2);
 
         const options = {
             pad,
@@ -178,7 +181,7 @@ export class Settings implements ExtensionComponent  {
         const halfOfPad = pad >> 1;
 
         return [
-            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width - halfOfPad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
+            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width - pad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
             `</text></svg>`,
         ];
     }

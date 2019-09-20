@@ -178,13 +178,13 @@ export class Jumpy implements ExtensionComponent {
             return;
         }
 
-        // Should it allow selecting to the character from current selection
+        // Should it allow expanding selection from current selection to the targeted marker
         // if the key was pressed with [Shift]?
         const code = this.state.typedCharacters + type.text.toLowerCase();
         const position = this.positions[code];
 
         if (position === undefined) {
-            // TODO: Notify on error
+            window.showErrorMessage(`Jumpy error, missing code: "${code}".`);
             this.handleExitJumpMode();
             return;
         }
@@ -212,15 +212,10 @@ export class Jumpy implements ExtensionComponent {
     }
 
     private showDecorations (editor: TextEditor): void {
-        console.time('Jumpy.showDecorations');
-
-        console.time('getVisibleLines');
         const lines = getVisibleLines(editor);
-        console.timeEnd('getVisibleLines');
 
         if (lines === null) {
             this.state.visibleRangesNotYetUpdated = true;
-            console.timeEnd('Jumpy.showDecorations');
             return;
         }
 
@@ -232,14 +227,18 @@ export class Jumpy implements ExtensionComponent {
         const maxDecorations = this.settings.codes.length;
 
         for (let i = 0; i < linesCount && positionCount < maxDecorations; i++) {
-            const text = lines[i].text;
+            for (const match of lines[i].text.matchAll(this.settings.wordRegexp)) {
+                if (positionCount >= maxDecorations) {
+                    break;
+                }
+                if (match.index === undefined) {
+                    continue;
+                }
 
-            let regexpResult = this.settings.wordRegexp.exec(text);
-            while (regexpResult != null && positionCount < maxDecorations) {
                 const code = this.settings.codes[positionCount];
                 const position = {
                     line: lines[i].lineNumber,
-                    char: regexpResult.index,
+                    char: match.index,
                 };
 
                 const line = position.line;
@@ -252,11 +251,9 @@ export class Jumpy implements ExtensionComponent {
                 });
 
                 positionCount += 1;
-                regexpResult = this.settings.wordRegexp.exec(text);
             }
         }
 
         this.setDecorations(editor, decorationOptions);
-        console.timeEnd('Jumpy.showDecorations');
     }
 }
