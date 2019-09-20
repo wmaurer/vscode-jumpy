@@ -4,8 +4,8 @@
     "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
     "icon": "images/jumpy-icon.png",
     "license": "MIT",
-    "version": "1.0.0",
-    "publisher": "krnik",
+    "version": "0.4.0",
+    "publisher": "wmaurer",
     "engines": {
         "vscode": "^1.38.0"
     },
@@ -24,12 +24,12 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/krnik/vscode-jumpy.git"
+        "url": "https://github.com/wmaurer/vscode-jumpy.git"
     },
     "bugs": {
-        "url": "https://github.com/krnik/vscode-jumpy/issues"
+        "url": "https://github.com/wmaurer/vscode-jumpy/issues"
     },
-    "homepage": "https://github.com/krnik/vscode-jumpy/blob/master/README.md",
+    "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
     "activationEvents": [
         "onCommand:extension.jumpy-enter",
         "onCommand:extension.jumpy-exit"
@@ -67,7 +67,7 @@
                 "jumpy.wordRegexp": {
                     "type": "string",
                     "default": "\\w{2,}",
-                    "description": "The Regexp to use to match words in Jumpy Word Mode."
+                    "description": "The Regexp to use to match words in Jumpy Word Mode"
                 },
                 "jumpy.wordRegexpFlags": {
                     "type": "string",
@@ -77,12 +77,12 @@
                 "jumpy.display.backgroundColor": {
                     "type": "string",
                     "default": "#004455",
-                    "description": "Background of Jumpy decoration."
+                    "description": "Background of Jumpy decoration in dark themes"
                 },
                 "jumpy.display.color": {
                     "type": "string",
                     "default": "#0af0c1",
-                    "description": "Text color of Jumpy decoration."
+                    "description": "Text color of Jumpy decoration in dark themes"
                 }
             }
         }
