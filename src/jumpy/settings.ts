@@ -1,4 +1,4 @@
-import { ConfigurationChangeEvent, DecorationInstanceRenderOptions, TextEditorDecorationType, Uri, window, workspace } from 'vscode';
+import { ConfigurationChangeEvent, DecorationInstanceRenderOptions, TextEditorDecorationType, ThemableDecorationAttachmentRenderOptions, ThemableDecorationRenderOptions, Uri, window, workspace } from 'vscode';
 import { createCharCodeSet } from './char_code';
 import { ExtensionComponent } from './typings';
 
@@ -9,27 +9,28 @@ export const enum SettingNamespace {
 }
 
 const enum Setting {
-    Display = 'display',
     UseIcons = 'useIcons',
-    EnableDisplaySwitch = 'enableDisplaySwitch',
     WordRegexp = 'wordRegexp',
     WordRegexpFlags = 'wordRegexpFlags',
     PrimaryCharset = 'primaryCharset',
+    FontFamily = 'fontFamily',
+    FontSize = 'fontSize',
 }
 
 const enum DisplaySetting {
-    FontFamily = 'display.fontFamily',
-    FontSize = 'display.fontSize',
     Color = 'display.color',
     BackgroundColor = 'display.backgroundColor',
 }
 
 interface DecorationOptions {
-    fontFamily: string;
-    fontSize: number;
+    pad: number;
     color: string;
+    width: number;
+    height: number;
+    fontSize: number;
+    fontFamily: string;
     backgroundColor: string;
-    width: string;
+    margin?: string;
 }
 
 // Default values
@@ -92,36 +93,10 @@ export class Settings implements ExtensionComponent  {
 
         this.charOffset = useIcons ? 2 : 0;
 
-        const fontFamily: string =
-            jumpyConfig[DisplaySetting.FontFamily] || editorConfig['fontFamily'];
-        const fontSize: number =
-            jumpyConfig[DisplaySetting.FontSize] || editorConfig['fontSize'];
-
-        // TODO: Should have defaults in package.json
-        const color = jumpyConfig.get<string>(DisplaySetting.Color);
-        const backgroundColor = jumpyConfig.get<string>(DisplaySetting.BackgroundColor);
-        // const outline = '';
-        // const outlineColor = '';
-        // const outlineStyle = '';
-        // const outlineWidth = '';
-        // const border = '';
-        // const borderColor = '';
-        // const borderRadius = '';
-        // const borderSpacing = '';
-        // const borderStyle = '';
-        // const borderWidth = '';
-        // const fontStyle = '';
-        // const fontWeight = '';
-        // const textDecoration = '';
-        // const cursor = '';
-        // const opacity = '';
-        // const gutterIconPath = '';
-        // const gutterIconSize = '';
-        // const overviewRulerColor = '';
-
-        // TODO: Should have defaults in package.json
-        // const colorLight = jumpyConfig[Setting.ColorLight];
-        // const backgroundLight = jumpyConfig[Setting.BackgroundLight];
+        const fontFamily = editorConfig.get(Setting.FontFamily) as string;
+        const fontSize = editorConfig.get(Setting.FontSize) as number;
+        const color = jumpyConfig.get(DisplaySetting.Color) as string;
+        const backgroundColor = jumpyConfig.get(DisplaySetting.BackgroundColor) as string;
 
         const pad = 2 * Math.ceil(fontSize / (10 * 2));
         const width = fontSize + pad;
@@ -136,13 +111,18 @@ export class Settings implements ExtensionComponent  {
             height: fontSize,
         };
 
-        const decorationTypeOptions: DecorationOptions = useIcons
+        const decorationTypeOptions: ThemableDecorationAttachmentRenderOptions | ThemableDecorationRenderOptions = useIcons
             ? {
                 width: `${width}px`,
                 height: `${fontSize}px`,
                 margin: `0 0 0 -${width}px`,
             }
-            : options;
+            : {
+                width: `${width}px`,
+                height: `${fontSize}px`,
+                color,
+                backgroundColor,
+            };
 
         this.decorationOptions = options;
         this.decorationType = window.createTextEditorDecorationType({ after: decorationTypeOptions });
@@ -161,7 +141,7 @@ export class Settings implements ExtensionComponent  {
     private buildCharset(): void {
         const jumpyConfig = workspace.getConfiguration(SettingNamespace.Jumpy);
         const charsetSetting = jumpyConfig.get<string>(Setting.PrimaryCharset);
-        const charset = charsetSetting && charsetSetting.length ? charsetSetting.split('') : undefined;
+        const charset = charsetSetting && charsetSetting.length ? charsetSetting.toLowerCase().split('') : undefined;
         this.codes = createCharCodeSet(charset);
     }
 
@@ -198,7 +178,7 @@ export class Settings implements ExtensionComponent  {
         const halfOfPad = pad >> 1;
 
         return [
-            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="Consolas, 'Courier New', monospace" font-size="${fontSize}px" textLength="${width - halfOfPad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
+            `image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}"><rect width="${width}" height="${height}" rx="2" ry="2" fill="${backgroundColor}"></rect><text font-family="${fontFamily}" font-size="${fontSize}px" textLength="${width - halfOfPad}" fill="${color}" x="${halfOfPad}" y="${fontSize * 0.8}">`,
             `</text></svg>`,
         ];
     }

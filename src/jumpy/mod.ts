@@ -1,9 +1,7 @@
-import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace, Selection, Position } from 'vscode';
+import { commands, ConfigurationChangeEvent, DecorationOptions, Disposable, Range, Selection, TextEditor, TextEditorSelectionChangeEvent, TextEditorVisibleRangesChangeEvent, window, workspace } from 'vscode';
 import { getVisibleLines } from './get_lines';
 import { Settings } from './settings';
 import { ExtensionComponent, Nullable } from './typings';
-
-// TODO: Measure performance of every bigger code chunks
 
 const enum Command {
     Type = 'type',
@@ -42,12 +40,6 @@ interface StateJumpInactive {
 }
 
 type State = StateJumpActive | StateJumpInactive;
-
-// interface State {
-//     selection?: Selection;
-//     editor?: TextEditor;
-//     isInJumpMode: boolean;
-// }
 
 const HANDLE_NAMES = [Command.Type, Command.Exit, Command.Enter, Event.ConfigChanged, Event.ActiveEditorChanged, Event.ActiveSelectionChanged, Event.VisibleRangesChanged] as const;
 const NO_DECORATIONS: any[] = [];
@@ -164,7 +156,6 @@ export class Jumpy implements ExtensionComponent {
     };
 
     private handleExitJumpMode = (): void => {
-
         if (!this.state.isInJumpMode) {
             return;
         }
@@ -178,8 +169,6 @@ export class Jumpy implements ExtensionComponent {
 
     private handleTypeEvent = (type: { text: string }): void => {
         if (!TYPE_REGEX.test(type.text) || !this.state.isInJumpMode) {
-            // TODO: Either exit jumpy mode or display a note that the key is unsupported.
-            // TODO: TYPE_REGEX should be config sensitive.
             this.state.typedCharacters = '';
             return;
         }
@@ -189,11 +178,14 @@ export class Jumpy implements ExtensionComponent {
             return;
         }
 
+        // Should it allow selecting to the character from current selection
+        // if the key was pressed with [Shift]?
         const code = this.state.typedCharacters + type.text.toLowerCase();
         const position = this.positions[code];
 
         if (position === undefined) {
-            // TODO: Notify on error.
+            // TODO: Notify on error
+            this.handleExitJumpMode();
             return;
         }
 
