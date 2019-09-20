@@ -39,12 +39,12 @@
         "commands": [],
         "keybindings": [
             {
-                "key": "shift+enter",
+                "key": "alt+q",
                 "command": "extension.jumpy-exit",
                 "when": "editorTextFocus && jumpy.isInJumpMode"
             },
             {
-                "key": "shift+enter",
+                "key": "alt+q",
                 "command": "extension.jumpy-enter",
                 "when": "editorTextFocus && !jumpy.isInJumpMode"
             }
