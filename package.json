@@ -51,35 +51,28 @@
         ],
         "configuration": {
             "type": "object",
-            "title": "Jumpy Configuration",
+            "title": "Jumpy",
             "properties": {
                 "jumpy.primaryCharset": {
                     "type": "string",
                     "pattern": "[a-z0-9]",
+                    "default": "qwerasdf1234zxcv",
                     "description": "Set of characters used to create jump key combinations. First letters will occur the closes to the current active line."
                 },
-                "jumpy.enableDisplaySwitch": {
+                "jumpy.useIcons": {
                     "type": "boolean",
-                    "default": false,
-                    "description": "Controlls whether it's possible to switch marker display."
+                    "default": true,
+                    "description": "Defines whether markers should be rendered as flowing icons or prepending text."
                 },
                 "jumpy.wordRegexp": {
                     "type": "string",
-                    "default": "",
+                    "default": "\\w{2,}",
                     "description": "The Regexp to use to match words in Jumpy Word Mode"
                 },
                 "jumpy.wordRegexpFlags": {
-                    "type": "string"
-                },
-                "jumpy.display.fontFamily": {
                     "type": "string",
-                    "default": "",
-                    "description": "Font used in Jumpy decorations, defaults to font from settings"
-                },
-                "jumpy.display.fontSize": {
-                    "type": "number",
-                    "default": 0,
-                    "description": "Font size used in Jumpy decorations, defaults to font size from settings"
+                    "default": "gi",
+                    "description": "The Regexp flags used when creating Regexp instance to match words."
                 },
                 "jumpy.display.backgroundColor": {
                     "type": "string",
@@ -90,16 +83,6 @@
                     "type": "string",
                     "default": "#0af0c1",
                     "description": "Text color of Jumpy decoration in dark themes"
-                },
-                "jumpy.display.lightThemeBackground": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Background of Jumpy decoration in light themes"
-                },
-                "jumpy.display.lightThemeForeground": {
-                    "type": "string",
-                    "default": "",
-                    "description": "Text color of Jumpy decoration in light themes"
                 }
             }
         }
