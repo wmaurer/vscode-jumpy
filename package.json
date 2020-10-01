@@ -22,6 +22,10 @@
         "AceJump",
         "EasyMotion"
     ],
+    "extensionKind": [
+        "ui",
+        "workspace"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/wmaurer/vscode-jumpy.git"
