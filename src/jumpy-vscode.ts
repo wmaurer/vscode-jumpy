@@ -1,16 +1,21 @@
 import * as vscode from 'vscode';
 
 const plusMinusLines = 60;
-const numCharCodes = 26;
+// TODO: Make setting
+// Custom letters
+const letters = 'fjdkslahgeirutybvcn'.split('');
+const numCharCodes = letters.length;
 
 export function createCodeArray(): string[] {
     const codeArray = new Array(numCharCodes * numCharCodes);
     let codeIndex = 0;
+
     for (let i = 0; i < numCharCodes; i++) {
         for (let j = 0; j < numCharCodes; j++) {
-            codeArray[codeIndex++] = String.fromCharCode(97 + i) + String.fromCharCode(97 + j);
+            codeArray[codeIndex++] = `${letters[i]}${letters[j]}`;
         }
     }
+
     return codeArray;
 }
 
@@ -93,14 +98,16 @@ export function createDecorationOptions(
 }
 
 function getSvgDataUri(code: string, dec: Decoration) {
+    // TODO: Make setting
     const width = dec.fontSize + 6;
+    const height = dec.fontSize + 2;
 
     // prettier-ignore
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${dec.fontSize}" height="${dec.fontSize}" width="${width}">`;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}">`;
     // prettier-ignore
-    svg += `<rect width="${width}" height="${dec.fontSize}" rx="2" ry="2" style="fill: ${dec.bgColor};"></rect>`;
+    svg += `<rect width="${width}" height="${height}" style="fill: ${dec.bgColor};"></rect>`;
     // prettier-ignore
-    svg += `<text font-family="${dec.fontFamily}" font-size="${dec.fontSize}px" textLength="${width - 2}" textAdjust="spacing" fill="${dec.fgColor}" x="1" y="${dec.fontSize - 2}" alignment-baseline="baseline">`;
+    svg += `<text font-family="${dec.fontFamily}" font-size="${dec.fontSize}px" textLength="${width - 2}" fill="${dec.fgColor}" x="1" y="${height - 3}" alignment-baseline="baseline">`;
     svg += code;
     svg += `</text></svg>`;
 
