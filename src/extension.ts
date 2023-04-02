@@ -20,10 +20,10 @@ export function activate(context: vscode.ExtensionContext) {
     const configuration = vscode.workspace.getConfiguration('jumpy');
 
     let fontFamily = configuration.get<string>('fontFamily');
-    fontFamily = fontFamily || editorConfig.get<string>('fontFamily');
+    fontFamily = fontFamily || editorConfig.get<string>('fontFamily') || 'monospace';
 
     let fontSize = configuration.get<number>('fontSize');
-    fontSize = fontSize || editorConfig.get<number>('fontSize') - 1;
+    fontSize = fontSize || editorConfig.get<number>('fontSize') - 1 || 14;
 
     const colors = {
         darkBgColor: configuration.get<string>('darkThemeBackground'),
