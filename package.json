@@ -4,7 +4,7 @@
     "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
     "icon": "images/jumpy-icon.png",
     "license": "MIT",
-    "version": "0.3.1",
+    "version": "0.3.2",
     "publisher": "wmaurer",
     "engines": {
         "vscode": "^1.24.0"
@@ -99,6 +99,7 @@
         }
     },
     "scripts": {
+        "package": "vsce package",
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
@@ -113,6 +114,7 @@
         "prettier": "^1.13.5",
         "tslint": "^3.15.1",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.6"
+        "vsce": "^2.15.0",
+        "vscode": "^1.1.37"
     }
 }
