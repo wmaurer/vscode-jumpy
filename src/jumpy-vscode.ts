@@ -2,7 +2,9 @@ import * as vscode from 'vscode';
 import { window } from 'vscode';
 
 const plusMinusLines = 60;
-// TODO: Make setting
+const widthPadding = 6;
+const heightPadding = 4;
+// TODO: Make letters a custom setting
 // Custom letters
 const letters = 'fjdkslahgeirutybvcn'.split('');
 
@@ -61,13 +63,13 @@ export function getLines(editor: vscode.TextEditor): { firstLineNumber: number; 
 }
 
 export function createTextEditorDecorationType(dec: Decoration) {
-    const width = dec.fontSize + 6;
-    const left = -width + 2;
+    const width = dec.fontSize + widthPadding;
+    const left = -width; // used to be -width - 2, making the text jump
 
     return vscode.window.createTextEditorDecorationType({
         after: {
             margin: `0 0 0 ${left}px`,
-            height: '${dec.fontSize}px',
+            height: `${dec.fontSize + 10}px`,
             width: `${width}px`,
         },
     });
@@ -97,17 +99,20 @@ export function createDecorationOptions(
     };
 }
 
+/**
+ * Create a data URI (SVG) for the given code.
+ */
 function getSvgDataUri(code: string, dec: Decoration) {
     // TODO: Make setting
-    const width = dec.fontSize + 6;
-    const height = dec.fontSize + 2;
+    const width = dec.fontSize + widthPadding;
+    const height = dec.fontSize + heightPadding;
 
     // prettier-ignore
     let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" height="${height}" width="${width}">`;
     // prettier-ignore
     svg += `<rect width="${width}" height="${height}" style="fill: ${dec.bgColor};"></rect>`;
     // prettier-ignore
-    svg += `<text font-family="${dec.fontFamily}" font-size="${dec.fontSize}px" textLength="${width - 2}" fill="${dec.fgColor}" x="1" y="${height - 3}" alignment-baseline="baseline">`;
+    svg += `<text font-family="${dec.fontFamily}" font-size="${dec.fontSize}px" textLength="${width - 2}" fill="${dec.fgColor}" x="1" y="${height - 4}" alignment-baseline="baseline">`;
     svg += code;
     svg += `</text></svg>`;
 

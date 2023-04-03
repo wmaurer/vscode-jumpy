@@ -16,6 +16,10 @@ export function jumpyWord(
 ): JumpyPosition[] {
     let positionIndex = 0;
     const positions: JumpyPosition[] = [];
+
+    // For each line in the document,
+    // find all the words that match the regexp
+    // and add them to the positions array
     for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
         let lineText = lines[i];
         let word: RegExpExecArray;
