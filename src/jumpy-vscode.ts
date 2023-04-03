@@ -1,20 +1,13 @@
 import * as vscode from 'vscode';
+import { window } from 'vscode';
 
 const plusMinusLines = 60;
 // TODO: Make setting
 // Custom letters
 const letters = 'fjdkslahgeirutybvcn'.split('');
-const numCharCodes = letters.length;
 
 export function createCodeArray(): string[] {
-    const codeArray = new Array(numCharCodes * numCharCodes);
-    let codeIndex = 0;
-
-    for (let i = 0; i < numCharCodes; i++) {
-        for (let j = 0; j < numCharCodes; j++) {
-            codeArray[codeIndex++] = `${letters[i]}${letters[j]}`;
-        }
-    }
+    const codeArray = letters.flatMap(first => letters.map(second => `${first}${second}`));
 
     return codeArray;
 }
@@ -35,8 +28,15 @@ export function createDataUriCaches(codeArray: string[], darkDecoration: Decorat
     codeArray.forEach(code => (lightDataUriCache[code] = getSvgDataUri(code, lightDecoration)));
 }
 
-export function getCodeIndex(code: string): number {
-    return (code.charCodeAt(0) - 97) * numCharCodes + code.charCodeAt(1) - 97;
+export function getCodeIndex(codeArray: string[], code: string): number {
+    const codeIndex = codeArray.indexOf(code);
+    // if we don't find the code, jump to start of document
+    if (codeIndex === -1) {
+        window.showErrorMessage(`Jumpy: No match for ${code} found.`);
+
+        return 0;
+    }
+    return codeIndex;
 }
 
 export function getLines(editor: vscode.TextEditor): { firstLineNumber: number; lines: string[] } {

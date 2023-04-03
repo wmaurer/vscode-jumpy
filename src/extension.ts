@@ -19,6 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
     const editorConfig = vscode.workspace.getConfiguration('editor');
     const configuration = vscode.workspace.getConfiguration('jumpy');
 
+    // get the font family and size from the editor configuration
     let fontFamily = configuration.get<string>('fontFamily');
     fontFamily = fontFamily || editorConfig.get<string>('fontFamily') || 'monospace';
 
@@ -45,6 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
         fontSize: fontSize,
     };
 
+    // create the svg data uris and store them in a cache
     createDataUriCaches(codeArray, darkDecoration, lightDecoration);
 
     const decorationTypeOffset2 = createTextEditorDecorationType(darkDecoration);
@@ -147,7 +149,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         const code = firstKeyOfCode + text;
-        const position = positions[getCodeIndex(code.toLowerCase())];
+        const position = positions[getCodeIndex(codeArray, code.toLowerCase())];
 
         editor.setDecorations(decorationTypeOffset2, []);
         editor.setDecorations(decorationTypeOffset1, []);
