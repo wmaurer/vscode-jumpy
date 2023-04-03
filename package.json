@@ -37,6 +37,13 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "keybindings": [
+            {
+                "command": "extension.jumpy-exit",
+                "key": "escape",
+                "when": "jumpy.isJumpyMode"
+            }
+        ],
         "commands": [
             {
                 "command": "extension.jumpy-word",
