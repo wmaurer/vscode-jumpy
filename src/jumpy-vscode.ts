@@ -69,7 +69,7 @@ export function createTextEditorDecorationType(dec: Decoration) {
     return vscode.window.createTextEditorDecorationType({
         after: {
             margin: `0 0 0 ${left}px`,
-            height: `${dec.fontSize + 10}px`,
+            height: `${dec.fontSize}px`,
             width: `${width}px`,
         },
     });

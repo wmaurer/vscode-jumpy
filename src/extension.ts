@@ -49,8 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
     // create the svg data uris and store them in a cache
     createDataUriCaches(codeArray, darkDecoration, lightDecoration);
 
-    const decorationTypeOffset2 = createTextEditorDecorationType(darkDecoration);
-    const decorationTypeOffset1 = createTextEditorDecorationType(darkDecoration);
+    const decorationTypeOffset = createTextEditorDecorationType(darkDecoration);
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;
@@ -69,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
         const getLinesResult = getLines(editor);
         positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
 
-        const decorationsOffset2 = positions
+        const decorationsOffset = positions
             .map(
                 (position, i) =>
                     position.charOffset == 1
@@ -84,23 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
             )
             .filter(x => !!x);
 
-        const decorationsOffset1 = positions
-            .map(
-                (position, i) =>
-                    position.charOffset == 2
-                        ? null
-                        : createDecorationOptions(
-                              position.line,
-                              position.character,
-                              position.character + 2,
-                              context,
-                              codeArray[i],
-                          ),
-            )
-            .filter(x => !!x);
-
-        editor.setDecorations(decorationTypeOffset2, decorationsOffset2);
-        editor.setDecorations(decorationTypeOffset1, decorationsOffset1);
+        editor.setDecorations(decorationTypeOffset, decorationsOffset);
 
         setJumpyMode(true);
         firstKeyOfCode = null;
@@ -109,8 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
     function exitJumpyMode() {
         const editor = vscode.window.activeTextEditor;
         setJumpyMode(false);
-        editor.setDecorations(decorationTypeOffset2, []);
-        editor.setDecorations(decorationTypeOffset1, []);
+        editor.setDecorations(decorationTypeOffset, []);
     }
 
     const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
@@ -151,8 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
         const code = firstKeyOfCode + text;
         const position = positions[getCodeIndex(codeArray, code.toLowerCase())];
 
-        editor.setDecorations(decorationTypeOffset2, []);
-        editor.setDecorations(decorationTypeOffset1, []);
+        editor.setDecorations(decorationTypeOffset, []);
 
         vscode.window.activeTextEditor.selection = new vscode.Selection(
             position.line,
