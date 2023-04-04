@@ -26,32 +26,19 @@ export function activate(context: vscode.ExtensionContext) {
     let fontSize = configuration.get<number>('fontSize');
     fontSize = fontSize || editorConfig.get<number>('fontSize') - 1 || 14;
 
-    const darkBgColor = new vscode.ThemeColor('editor.foreground');
+    const fgColor: vscode.ThemeColor | string =
+        configuration.get<string>('foregroundColor') || new vscode.ThemeColor('editor.background') || 'indianred';
+    const bgColor: vscode.ThemeColor | string =
+        configuration.get<string>('backgroundColor') || new vscode.ThemeColor('editor.foreground') || 'goldenrod';
 
-    const colors = {
-        darkBgColor,
-        darkFgColor: configuration.get<string>('darkThemeForeground'),
-        lightBgColor: configuration.get<string>('lightThemeBackground'),
-        lightFgColor: configuration.get<string>('lightThemeForeground'),
-    };
-
-    const darkDecoration = {
-        bgColor: colors.darkBgColor,
-        fgColor: colors.darkFgColor,
-        fontFamily: fontFamily,
-        fontSize: fontSize,
-    };
-    const lightDecoration = {
-        bgColor: colors.lightBgColor,
-        fgColor: colors.lightFgColor,
+    const decoration = {
+        bgColor,
+        fgColor,
         fontFamily: fontFamily,
         fontSize: fontSize,
     };
 
-    // create the svg data uris and store them in a cache
-    // createDataUriCaches(codeArray, darkDecoration, lightDecoration);
-
-    const decorationTypeOffset = createTextEditorDecorationType(darkDecoration);
+    const decorationTypeOffset = createTextEditorDecorationType(decoration);
 
     let positions: JumpyPosition[] = null;
     let firstLineNumber = 0;

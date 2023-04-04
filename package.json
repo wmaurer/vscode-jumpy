@@ -82,25 +82,13 @@
                     "default": 0,
                     "description": "Font size used in Jumpy decorations, defaults to font size from settings"
                 },
-                "jumpy.darkThemeBackground": {
+                "jumpy.foregroundColor": {
                     "type": "string",
-                    "default": "white",
-                    "description": "Background of Jumpy decoration in dark themes"
+                    "description": "Text color of Jumpy decoration"
                 },
-                "jumpy.darkThemeForeground": {
+                "jumpy.backgroundColor": {
                     "type": "string",
-                    "default": "black",
-                    "description": "Text color of Jumpy decoration in dark themes"
-                },
-                "jumpy.lightThemeBackground": {
-                    "type": "string",
-                    "default": "black",
-                    "description": "Background of Jumpy decoration in light themes"
-                },
-                "jumpy.lightThemeForeground": {
-                    "type": "string",
-                    "default": "white",
-                    "description": "Text color of Jumpy decoration in light themes"
+                    "description": "Background color of Jumpy decoration"
                 }
             }
         }

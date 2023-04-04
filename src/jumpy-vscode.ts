@@ -71,6 +71,8 @@ export function createTextEditorDecorationType(dec: Decoration) {
             margin: `0 0 0 ${marginLeft}px`,
             height: `100%`, // full height of line
             width: `${width}px`,
+            backgroundColor: dec.bgColor,
+            color: dec.fgColor,
         },
     });
 }
@@ -88,14 +90,13 @@ export function createDecorationOptions(
             dark: {
                 after: {
                     contentText: code,
-                    backgroundColor: new vscode.ThemeColor('editor.foreground'),
-                    color: new vscode.ThemeColor('editor.background'),
-                    // contentIconPath: darkDataUriCache[code],
+                    // Any colors set here will override the Decoration colors
                 },
             },
+            // light and dark can be the same since we use the editr colors
             light: {
                 after: {
-                    contentIconPath: lightDataUriCache[code],
+                    contentText: code,
                 },
             },
         },
