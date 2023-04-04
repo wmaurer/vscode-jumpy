@@ -2,7 +2,6 @@
 import * as vscode from 'vscode';
 
 import {
-    Decoration,
     createCodeArray,
     createDataUriCaches,
     getCodeIndex,
@@ -11,6 +10,7 @@ import {
     createDecorationOptions,
 } from './jumpy-vscode';
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
+import { workspace } from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
     const codeArray = createCodeArray();
@@ -26,8 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
     let fontSize = configuration.get<number>('fontSize');
     fontSize = fontSize || editorConfig.get<number>('fontSize') - 1 || 14;
 
+    const darkBgColor = new vscode.ThemeColor('editor.foreground');
+
     const colors = {
-        darkBgColor: configuration.get<string>('darkThemeBackground'),
+        darkBgColor,
         darkFgColor: configuration.get<string>('darkThemeForeground'),
         lightBgColor: configuration.get<string>('lightThemeBackground'),
         lightFgColor: configuration.get<string>('lightThemeForeground'),

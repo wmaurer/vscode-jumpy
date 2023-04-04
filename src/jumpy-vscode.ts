@@ -18,8 +18,8 @@ let darkDataUriCache: { [index: string]: vscode.Uri } = {};
 let lightDataUriCache: { [index: string]: vscode.Uri } = {};
 
 export interface Decoration {
-    bgColor: string;
-    fgColor: string;
+    bgColor: string | vscode.ThemeColor;
+    fgColor: string | vscode.ThemeColor;
 
     fontFamily: string;
     fontSize: number;
@@ -69,7 +69,7 @@ export function createTextEditorDecorationType(dec: Decoration) {
     return vscode.window.createTextEditorDecorationType({
         after: {
             margin: `0 0 0 ${left}px`,
-            height: `${dec.fontSize}px`,
+            height: `${dec.fontSize * 2.6}px`,
             width: `${width}px`,
         },
     });
@@ -87,7 +87,10 @@ export function createDecorationOptions(
         renderOptions: {
             dark: {
                 after: {
-                    contentIconPath: darkDataUriCache[code],
+                    contentText: code,
+                    backgroundColor: new vscode.ThemeColor('editor.foreground'),
+                    color: new vscode.ThemeColor('editor.background'),
+                    // contentIconPath: darkDataUriCache[code],
                 },
             },
             light: {
