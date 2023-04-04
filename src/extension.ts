@@ -49,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
     };
 
     // create the svg data uris and store them in a cache
-    createDataUriCaches(codeArray, darkDecoration, lightDecoration);
+    // createDataUriCaches(codeArray, darkDecoration, lightDecoration);
 
     const decorationTypeOffset = createTextEditorDecorationType(darkDecoration);
 
