@@ -64,12 +64,12 @@ export function getLines(editor: vscode.TextEditor): { firstLineNumber: number; 
 
 export function createTextEditorDecorationType(dec: Decoration) {
     const width = dec.fontSize + widthPadding;
-    const left = -width; // used to be -width - 2, making the text jump
+    const marginLeft = -width; // used to be -width - 2, making the text jump
 
     return vscode.window.createTextEditorDecorationType({
         after: {
-            margin: `0 0 0 ${left}px`,
-            height: `${dec.fontSize * 2.6}px`,
+            margin: `0 0 0 ${marginLeft}px`,
+            height: `100%`, // full height of line
             width: `${width}px`,
         },
     });
