@@ -7,8 +7,8 @@ import {
     getLines,
     createTextEditorDecorationType,
     createDecorationOptions,
-} from './jumpy-vscode';
-import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
+} from './hopper';
+import { HopperPosition, HopperFn, hopperWord, hopperLine } from './positions';
 
 export function activate(context: vscode.ExtensionContext) {
     // Load decoration codes
@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // load configuration
     const editorConfig = vscode.workspace.getConfiguration('editor');
-    const configuration = vscode.workspace.getConfiguration('jumpy');
+    const configuration = vscode.workspace.getConfiguration('hopper');
 
     // set variables for decorations
     let fontFamily = configuration.get<string>('fontFamily');
@@ -39,21 +39,21 @@ export function activate(context: vscode.ExtensionContext) {
 
     const decorationTypeOffset = createTextEditorDecorationType(decoration);
 
-    let positions: JumpyPosition[] = null;
-    let isJumpyMode: boolean = false;
-    setJumpyMode(false);
+    let positions: HopperPosition[] = null;
+    let isHopperMode: boolean = false;
+    setHopperMode(false);
     let firstKeyOfCode: string = null;
 
-    function setJumpyMode(value: boolean) {
-        isJumpyMode = value;
-        vscode.commands.executeCommand('setContext', 'jumpy.isJumpyMode', value);
+    function setHopperMode(value: boolean) {
+        isHopperMode = value;
+        vscode.commands.executeCommand('setContext', 'hopper.isHopperMode', value);
     }
 
-    function runJumpy(jumpyFn: JumpyFn, regexp: RegExp) {
+    function runHopper(hopperFn: HopperFn, regexp: RegExp) {
         const editor = vscode.window.activeTextEditor;
 
         const getLinesResult = getLines(editor);
-        positions = jumpyFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
+        positions = hopperFn(codeArray.length, getLinesResult.firstLineNumber, getLinesResult.lines, regexp);
 
         const decorationsOffset = positions
             .map(
@@ -72,36 +72,36 @@ export function activate(context: vscode.ExtensionContext) {
 
         editor.setDecorations(decorationTypeOffset, decorationsOffset);
 
-        setJumpyMode(true);
+        setHopperMode(true);
         firstKeyOfCode = null;
     }
 
-    function exitJumpyMode() {
+    function exitHopperMode() {
         const editor = vscode.window.activeTextEditor;
-        setJumpyMode(false);
+        setHopperMode(false);
         editor.setDecorations(decorationTypeOffset, []);
     }
 
     // register disposable functions
-    const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
-        const configuration = vscode.workspace.getConfiguration('jumpy');
+    const hopperWordDisposable = vscode.commands.registerCommand('extension.hopper-word', () => {
+        const configuration = vscode.workspace.getConfiguration('hopper');
         const defaultRegexp = '\\w{2,}';
         const wordRegexp = configuration ? configuration.get<string>('wordRegexp', defaultRegexp) : defaultRegexp;
-        runJumpy(jumpyWord, new RegExp(wordRegexp, 'g'));
+        runHopper(hopperWord, new RegExp(wordRegexp, 'g'));
     });
-    context.subscriptions.push(jumpyWordDisposable);
+    context.subscriptions.push(hopperWordDisposable);
 
-    const jumpyLineDisposable = vscode.commands.registerCommand('extension.jumpy-line', () => {
-        const configuration = vscode.workspace.getConfiguration('jumpy');
+    const hopperLineDisposable = vscode.commands.registerCommand('extension.hopper-line', () => {
+        const configuration = vscode.workspace.getConfiguration('hopper');
         const defaultRegexp = '^\\s*$';
         const lineRegexp = configuration ? configuration.get<string>('lineRegexp', defaultRegexp) : defaultRegexp;
-        runJumpy(jumpyLine, new RegExp(lineRegexp));
+        runHopper(hopperLine, new RegExp(lineRegexp));
     });
-    context.subscriptions.push(jumpyLineDisposable);
+    context.subscriptions.push(hopperLineDisposable);
 
-    // runs on 'type' (user typeing) when in jumpy mode
-    const jumpyTypeDisposable = vscode.commands.registerCommand('type', args => {
-        if (!isJumpyMode) {
+    // runs on 'type' (user typeing) when in hopper mode
+    const hopperTypeDisposable = vscode.commands.registerCommand('type', args => {
+        if (!isHopperMode) {
             vscode.commands.executeCommand('default:type', args);
             return;
         }
@@ -110,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
         const text: string = args.text;
 
         if (text.search(/[a-z]/i) === -1) {
-            exitJumpyMode();
+            exitHopperMode();
             return;
         }
 
@@ -135,16 +135,16 @@ export function activate(context: vscode.ExtensionContext) {
         const reviewType: vscode.TextEditorRevealType = vscode.TextEditorRevealType.Default;
         vscode.window.activeTextEditor.revealRange(vscode.window.activeTextEditor.selection, reviewType);
 
-        setJumpyMode(false);
+        setHopperMode(false);
     });
-    context.subscriptions.push(jumpyTypeDisposable);
+    context.subscriptions.push(hopperTypeDisposable);
 
-    const exitJumpyModeDisposable = vscode.commands.registerCommand('extension.jumpy-exit', () => {
-        exitJumpyMode();
+    const exitHopperModeDisposable = vscode.commands.registerCommand('extension.hopper-exit', () => {
+        exitHopperMode();
     });
-    context.subscriptions.push(exitJumpyModeDisposable);
+    context.subscriptions.push(exitHopperModeDisposable);
 
-    const didChangeActiveTextEditorDisposable = vscode.window.onDidChangeActiveTextEditor(event => exitJumpyMode());
+    const didChangeActiveTextEditorDisposable = vscode.window.onDidChangeActiveTextEditor(event => exitHopperMode());
     context.subscriptions.push(didChangeActiveTextEditorDisposable);
 }
 

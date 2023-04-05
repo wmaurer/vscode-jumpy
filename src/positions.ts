@@ -1,21 +1,21 @@
-export interface JumpyPosition {
+export interface HopperPosition {
     line: number;
     character: number;
     charOffset: number;
 }
 
-export interface JumpyFn {
-    (maxDecorations: number, firstLineNumber: number, lines: string[], regexp: RegExp): JumpyPosition[];
+export interface HopperFn {
+    (maxDecorations: number, firstLineNumber: number, lines: string[], regexp: RegExp): HopperPosition[];
 }
 
-export function jumpyWord(
+export function hopperWord(
     maxDecorations: number,
     firstLineNumber: number,
     lines: string[],
     regexp: RegExp,
-): JumpyPosition[] {
+): HopperPosition[] {
     let positionIndex = 0;
-    const positions: JumpyPosition[] = [];
+    const positions: HopperPosition[] = [];
 
     // For each line in the document,
     // find all the words that match the regexp
@@ -34,14 +34,14 @@ export function jumpyWord(
     return positions;
 }
 
-export function jumpyLine(
+export function hopperLine(
     maxDecorations: number,
     firstLineNumber: number,
     lines: string[],
     regexp: RegExp,
-): JumpyPosition[] {
+): HopperPosition[] {
     let positionIndex = 0;
-    const positions: JumpyPosition[] = [];
+    const positions: HopperPosition[] = [];
     for (let i = 0; i < lines.length && positionIndex < maxDecorations; i++) {
         if (!lines[i].match(regexp)) {
             positions.push({

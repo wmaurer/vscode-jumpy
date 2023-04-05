@@ -1,11 +1,11 @@
 {
-    "name": "vscode-jumpy",
-    "displayName": "jumpy",
-    "description": "Jumpy provides fast cursor movement, inspired by Atom's package of the same name.",
-    "icon": "images/jumpy-icon.png",
+    "name": "vscode-hopper",
+    "displayName": "hopper",
+    "description": "Hopper provides fast cursor movement, inspired by the Atom package Hopper.",
+    "icon": "images/hopper-icon.png",
     "license": "MIT",
-    "version": "0.3.2",
-    "publisher": "wmaurer",
+    "version": "0.1.0",
+    "publisher": "bjorn-eric-abr",
     "engines": {
         "vscode": "^1.24.0"
     },
@@ -17,78 +17,80 @@
         "theme": "dark"
     },
     "keywords": [
-        "jumpy",
+        "hopper",
         "jump",
+        "hopper",
+        "leap",
         "AceJump",
         "EasyMotion"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/wmaurer/vscode-jumpy.git"
+        "url": "https://github.com/Bjorn-Eric-Abr/Hopper.git"
     },
     "bugs": {
-        "url": "https://github.com/wmaurer/vscode-jumpy/issues"
+        "url": "https://github.com/Bjorn-Eric-Abr/Hopper/issues"
     },
-    "homepage": "https://github.com/wmaurer/vscode-jumpy/blob/master/README.md",
+    "homepage": "https://github.com/Bjorn-Eric-Abr/Hopper/blob/master/README.md",
     "activationEvents": [
-        "onCommand:extension.jumpy-word",
-        "onCommand:extension.jumpy-line",
-        "onCommand:extension.jumpy-exit"
+        "onCommand:extension.hopper-word",
+        "onCommand:extension.hopper-line",
+        "onCommand:extension.hopper-exit"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "keybindings": [
             {
-                "command": "extension.jumpy-exit",
+                "command": "extension.hopper-exit",
                 "key": "escape",
-                "when": "jumpy.isJumpyMode"
+                "when": "hopper.isHopperMode"
             }
         ],
         "commands": [
             {
-                "command": "extension.jumpy-word",
-                "title": "Jumpy Word Mode"
+                "command": "extension.hopper-word",
+                "title": "Hopper Word Mode"
             },
             {
-                "command": "extension.jumpy-line",
-                "title": "Jumpy Line Mode"
+                "command": "extension.hopper-line",
+                "title": "Hopper Line Mode"
             },
             {
-                "command": "extension.jumpy-exit",
-                "title": "Exit Jumpy Mode"
+                "command": "extension.hopper-exit",
+                "title": "Exit Hopper Mode"
             }
         ],
         "configuration": {
             "type": "object",
-            "title": "Jumpy Configuration",
+            "title": "Hopper Configuration",
             "properties": {
-                "jumpy.wordRegexp": {
+                "hopper.wordRegexp": {
                     "type": "string",
                     "default": "\\w{2,}",
-                    "description": "The Regexp to use to match words in Jumpy Word Mode"
+                    "description": "The Regexp to use to match words in Hopper Word Mode"
                 },
-                "jumpy.lineRegexp": {
+                "hopper.lineRegexp": {
                     "type": "string",
                     "default": "^\\s*$",
-                    "description": "The Regexp to use to match empty lines in Jumpy Line Mode"
+                    "description": "The Regexp to use to match empty lines in Hopper Line Mode"
                 },
-                "jumpy.fontFamily": {
+                "hopper.fontFamily": {
                     "type": "string",
                     "default": "",
-                    "description": "Font used in Jumpy decorations, defaults to font from settings"
+                    "description": "Font used in Hopper decorations, defaults to font from settings"
                 },
-                "jumpy.fontSize": {
+                "hopper.fontSize": {
                     "type": "number",
                     "default": 0,
-                    "description": "Font size used in Jumpy decorations, defaults to font size from settings"
+                    "description": "Font size used in Hopper decorations, defaults to font size from settings"
                 },
-                "jumpy.foregroundColor": {
+                "hopper.foregroundColor": {
                     "type": "string",
-                    "description": "Text color of Jumpy decoration"
+                    "description": "Text color of Hopper decoration"
                 },
-                "jumpy.backgroundColor": {
+                "hopper.backgroundColor": {
                     "type": "string",
-                    "description": "Background color of Jumpy decoration"
+                    "description": "Background color of Hopper decoration"
                 }
             }
         }
