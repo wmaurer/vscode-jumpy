@@ -3,23 +3,22 @@ import * as vscode from 'vscode';
 
 import {
     createCodeArray,
-    createDataUriCaches,
     getCodeIndex,
     getLines,
     createTextEditorDecorationType,
     createDecorationOptions,
 } from './jumpy-vscode';
 import { JumpyPosition, JumpyFn, jumpyWord, jumpyLine } from './jumpy-positions';
-import { workspace } from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
+    // Load decoration codes
     const codeArray = createCodeArray();
 
-    // decorations, based on configuration
+    // load configuration
     const editorConfig = vscode.workspace.getConfiguration('editor');
     const configuration = vscode.workspace.getConfiguration('jumpy');
 
-    // get the font family and size from the editor configuration
+    // set variables for decorations
     let fontFamily = configuration.get<string>('fontFamily');
     fontFamily = fontFamily || editorConfig.get<string>('fontFamily') || 'monospace';
 
@@ -41,7 +40,6 @@ export function activate(context: vscode.ExtensionContext) {
     const decorationTypeOffset = createTextEditorDecorationType(decoration);
 
     let positions: JumpyPosition[] = null;
-    let firstLineNumber = 0;
     let isJumpyMode: boolean = false;
     setJumpyMode(false);
     let firstKeyOfCode: string = null;
@@ -84,6 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
         editor.setDecorations(decorationTypeOffset, []);
     }
 
+    // register disposable functions
     const jumpyWordDisposable = vscode.commands.registerCommand('extension.jumpy-word', () => {
         const configuration = vscode.workspace.getConfiguration('jumpy');
         const defaultRegexp = '\\w{2,}';
@@ -100,6 +99,7 @@ export function activate(context: vscode.ExtensionContext) {
     });
     context.subscriptions.push(jumpyLineDisposable);
 
+    // runs on 'type' (user typeing) when in jumpy mode
     const jumpyTypeDisposable = vscode.commands.registerCommand('type', args => {
         if (!isJumpyMode) {
             vscode.commands.executeCommand('default:type', args);
@@ -108,13 +108,14 @@ export function activate(context: vscode.ExtensionContext) {
 
         const editor = vscode.window.activeTextEditor;
         const text: string = args.text;
-
+        debugger;
         if (text.search(/[a-z]/i) === -1) {
             exitJumpyMode();
             return;
         }
 
         if (!firstKeyOfCode) {
+            // set first key of code so that on next type we can get the full code
             firstKeyOfCode = text;
             return;
         }
