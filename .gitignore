@@ -3,3 +3,4 @@ node_modules
 
 # Ignore built extentions
 *.vsix
+.DS_Store
