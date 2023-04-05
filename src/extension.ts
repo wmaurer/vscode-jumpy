@@ -108,7 +108,7 @@ export function activate(context: vscode.ExtensionContext) {
 
         const editor = vscode.window.activeTextEditor;
         const text: string = args.text;
-        debugger;
+
         if (text.search(/[a-z]/i) === -1) {
             exitJumpyMode();
             return;

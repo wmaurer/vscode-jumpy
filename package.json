@@ -35,7 +35,7 @@
         "onCommand:extension.jumpy-line",
         "onCommand:extension.jumpy-exit"
     ],
-    "main": "./out/src/extension",
+    "main": "./out/extension.js",
     "contributes": {
         "keybindings": [
             {
@@ -95,16 +95,17 @@
     },
     "scripts": {
         "package": "vsce package",
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test",
+        "vscode:prepublish": "npm run esbuild-base -- --minify",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+        "build": "npm run esbuild-base -- --sourcemap",
+        "watch": "npm run esbuild-base -- --sourcemap --watch",
+        "test-compile": "tsc -p ./",
         "format": "prettier ./**/*.{ts,json} --write"
     },
     "devDependencies": {
         "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.45",
+        "esbuild": "^0.17.15",
         "mocha": "^5.2.0",
         "prettier": "^1.13.5",
         "tslint": "^3.15.1",
