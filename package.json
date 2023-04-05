@@ -1,6 +1,6 @@
 {
-    "name": "vscode-hopper",
-    "displayName": "hopper",
+    "name": "hopper",
+    "displayName": "Hopper",
     "description": "Hopper provides fast cursor movement, inspired by the Atom package Hopper.",
     "icon": "images/hopper-icon.png",
     "license": "MIT",
@@ -43,7 +43,7 @@
             {
                 "command": "extension.hopper-exit",
                 "key": "escape",
-                "when": "hopper.isHopperMode"
+                "when": "editorTextFocus && hopper.isHopperMode"
             }
         ],
         "commands": [

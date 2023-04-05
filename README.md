@@ -51,14 +51,10 @@ Hopper settings can be configured by adding entries into your `settings.json` (F
 
 `"hopper.fontSize"`: Font size used in Hopper decorations, defaults to font size from settings - 1
 
-`"hopper.darkThemeBackground"`: Background of Hopper decoration in dark themes
+`"hopper.background"`: Background of Hopper decoration
 
-`"hopper.darkThemeForeground"`: Text color of Hopper decoration in dark themes
-
-`"hopper.lightThemeBackground"`: Background of Hopper decoration in light themes
-
-`"hopper.lightThemeForeground"`: Text color of Hopper decoration in light themes
+`"hopper.foreground"`: Text color of Hopper decoration
 
 ## Support
 
-[Create an issue](https://github.com/wmaurer/vscode-hopper/issues)
+[Create an issue](https://github.com/Bjorn-Eric-Abr/Hopper/issues)
