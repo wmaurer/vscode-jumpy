@@ -107,12 +107,12 @@
     "devDependencies": {
         "@types/mocha": "^2.2.32",
         "@types/node": "^6.0.45",
+        "@vscode/vsce": "^2.18.0",
         "esbuild": "^0.17.15",
         "mocha": "^5.2.0",
         "prettier": "^1.13.5",
         "tslint": "^3.15.1",
         "typescript": "^2.9.2",
-        "vsce": "^2.15.0",
         "vscode": "^1.1.37"
     }
 }
